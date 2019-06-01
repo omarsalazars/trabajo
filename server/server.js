@@ -13,8 +13,8 @@ app.get('/',(req,res)=>{
 let Offer = require('./models/offer');
 
 app.get('/offers',(req,res)=>{
-    Offer.find({available:true})
-    .exec((err, products)=>{
+    Offer.find({})
+    .exec((err, offers)=>{
         if(err){
             return res.status(500).json({
                 ok:false,
@@ -23,7 +23,7 @@ app.get('/offers',(req,res)=>{
         }
         res.json({
             ok:true,
-            products
+            offers
         })
     })
 })
