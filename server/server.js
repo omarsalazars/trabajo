@@ -5,29 +5,11 @@ const mongoose = require('mongoose');
 
 var app = express();
 
-app.get('/',(req,res)=>{
-    res.send('El beris se la come');
-})
+var index = require('./routes/index');
+var offers = require('./routes/offers');
 
-
-let Offer = require('./models/offer');
-
-app.get('/offers',(req,res)=>{
-    Offer.find({})
-    .exec((err, offers)=>{
-        if(err){
-            return res.status(500).json({
-                ok:false,
-                err
-            })
-        }
-        res.json({
-            ok:true,
-            offers
-        })
-    })
-})
-
+app.use('/', index);
+app.use('/offers', offers);
 
 mongoose.connect(process.env.URLDB,{
     useCreateIndex:true,

@@ -18,11 +18,11 @@ let offerSchema = new Schema({
     },
     salary:{
         type:Number,
-        required:false
+        required:true
     },
     travel:{
         type:Boolean,
-        required:false
+        required:true
     }
 });
 
