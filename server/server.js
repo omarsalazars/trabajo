@@ -7,9 +7,13 @@ var app = express();
 
 var index = require('./routes/index');
 var offers = require('./routes/offers');
+var users = require('./routes/users');
+var enterprises = require('./routes/enterprises');
 
 app.use('/', index);
 app.use('/offers', offers);
+app.use('/users', users);
+app.use('/enterprises', enterprises);
 
 mongoose.connect(process.env.URLDB,{
     useCreateIndex:true,
