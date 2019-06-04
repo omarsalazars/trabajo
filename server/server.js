@@ -2,6 +2,7 @@ require('./config/config'); //Config solo se importa así al chile
 
 const express = require ('express');
 const mongoose = require('mongoose');
+const bodyParser = require('body-parser');
 
 var app = express();
 
@@ -9,6 +10,9 @@ var index = require('./routes/index');
 var offers = require('./routes/offers');
 var users = require('./routes/users');
 var enterprises = require('./routes/enterprises');
+
+app.use(bodyParser.urlencoded({ extended: true }))
+app.use(bodyParser.json())
 
 app.use('/', index);
 app.use('/offers', offers);
