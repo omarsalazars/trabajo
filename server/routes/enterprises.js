@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-let Offer = require('../models/enterprises');
+let Offer = require('../models/enterprise');
 
 router.get('/',(req,res)=>{
     Offer.find({})
