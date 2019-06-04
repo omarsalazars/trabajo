@@ -6,7 +6,7 @@ const bcrypt = require('bcrypt');
 let User = require('../models/user');
 
 router.get('/',(req,res)=>{
-    Offer.find({})
+    User.find({})
     .exec((err, users)=>{
         if(err){
             return res.status(500).json({
@@ -51,7 +51,7 @@ router.post('/', async function(req, res){
 
 });
 
-app.delete('/usuario/:id', async function(req, res){
+router.delete('/usuario/:id', async function(req, res){
 
     let id = req.params.id;
 

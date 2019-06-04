@@ -6,7 +6,6 @@ let Schema = mongoose.Schema;
 let userSchema = new Schema({
     first_name:{
         type:String,
-        unique:true,
         required:true
     },
     last_name:{
