@@ -28,7 +28,8 @@ router.post('/',verifyToken, async function(req, res){
         name : body.name,
         email : body.email,
         website : body.website,
-        phone : body.phone
+        phone : body.phone,
+        admins : req.user._id
     });
 
     await enterprise.save((err, enterpriseDB)=>{
