@@ -6,7 +6,7 @@ const { verifyToken} = require('../middlewares/authentication')
 let Enterprise = require('../models/enterprise');
 
 router.get('/',(req,res)=>{
-    Offer.find({})
+    Enterprise.find({})
     .exec((err, enterprises)=>{
         if(err){
             return res.status(500).json({
