@@ -105,4 +105,5 @@ router.delete('/usuario/:id', async function(req, res){
     });
 });
 
+
 module.exports = router;
