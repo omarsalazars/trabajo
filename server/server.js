@@ -19,7 +19,7 @@ app.use(bodyParser.json())
 app.use('/api/offers', offers);
 app.use('/api/users', users);
 app.use('/api/enterprises', enterprises);
-app.use(express.static('public'));
+app.use(express.static(path.join(__dirname,'public')));
 
 mongoose.connect(process.env.URLDB,{
     useCreateIndex:true,
