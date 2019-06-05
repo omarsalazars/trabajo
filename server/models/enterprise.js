@@ -1,16 +1,13 @@
 const mongoose = require('mongoose');
+const uniqueValidator = require('mongoose-unique-validator');
 
 let Schema = mongoose.Schema;
 
-let offerSchema = new Schema({
-    id:{
-        type:Number,
-        unique:true,
-        required:true
-    },
+let enterpriseSchema = new Schema({
     name:{
         type:String,
-        required:true
+        required:true,
+        unique:true
     },
     website:{
         type:String,
@@ -26,5 +23,9 @@ let offerSchema = new Schema({
     }
 });
 
+enterpriseSchema.plugin(uniqueValidator,{
+    message:'There is already an enterprise with that name'
+});
+
 /// EN ESTA SIGUIENTE LINEA YA SE CREA EL MODELO USERS
-module.exports = mongoose.model('Enterprise', offerSchema);
+module.exports = mongoose.model('Enterprise', enterpriseSchema);

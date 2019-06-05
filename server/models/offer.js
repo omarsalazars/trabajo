@@ -9,7 +9,6 @@ let offerSchema = new Schema({
     },
     position:{
         type:String,
-        unique:true,
         required:true
     },
     description:{
