@@ -32,7 +32,7 @@ angular.module('myApp').run(function($rootScope, $http, $location, $localStorage
         var restrictedPage = publicPages.indexOf($location.path()) === -1;
         if (restrictedPage && !$localStorage.currentUser) {
             $rootScope.hide=false;
-            $location.path('/login');
+            $location.path('/');
         }
     });
 });
