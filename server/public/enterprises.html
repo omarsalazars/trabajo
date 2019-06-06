@@ -1,0 +1,36 @@
+<div class="container pb-5">
+    <h1 class="my-5 text-center">Empresas Afiliadas</h1>
+    <div class="row" ng-repeat="enterprises in split_enterprises">
+        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 border p-3" style="border-color: rgba(0,0,0,0.4)" ng-repeat="enterprise in enterprises">
+            <div class="row">
+                <div class="col-md-6 text-center">
+                    <img class="img-thumbnail img-fluid mt-5" ng-src="{{enterprise.image}}">
+                </div>
+                <div class="col-md-6 text-center">
+                    <h1 class="display-6">{{enterprise.name}}</h1>
+                    <p class="font-weight-bold">Descripción:</p>
+                    <p>{{enterprise.description}}</p>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <a href="{{enterprise.website}}">
+                                <p>{{enterprise.website}}</p>
+                            </a>
+                        </div>
+                        <div class="col-md-6">
+                            <a href="{{'tel:+52'+enterprise.phone}}">
+                                <p>{{enterprise.phone}}</p>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12 text-center">
+                            <a ng-href="email:{{enterprise.email}}">
+                                <p>{{enterprise.email}}</p>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

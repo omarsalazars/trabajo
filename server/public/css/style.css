@@ -1,0 +1,15 @@
+.footer{
+    height: 40vh;
+    background: var(--indigo);
+}
+.banner-fullscreen{
+    margin: 0;
+    background: url('../img/banner1.jpeg');
+    background-size: cover;
+    background-position: center top;
+    height: 100vh;
+}
+.banner-text{
+    background-color: rgba(255,255,255,0.5);
+    margin-top: 35vh;
+}
