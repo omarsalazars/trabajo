@@ -3,7 +3,7 @@
     <form>
         <div class="row">
             <div class="col">
-                <input type="text" id="clave" class="form-control" placeholder="Titulo, palabras clave o empresa">
+                <input type="text" id="clave" class="form-control" placeholder="Titulo, palabras clave o empresa" ng-model="clave">
             </div>
             <div class="col">
                 <select class="form-control">
@@ -28,16 +28,16 @@
                     <tr>
                         <th scope="col">Puesto</th>
                         <th scope="col">Empresa</th>
-                        <th scope="col">Ciudad</th>
+                        <th scope="col">Dispionibilidad de viaje</th>
                         <th scope="col">Salario</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr ng-repeat="offer in offers">
-                        <th scope="row">{{offer.puesto}}</th>
-                        <td>{{offer.empresa}}</td>
-                        <td>{{offer.ciudad}}</td>
-                        <td>{{offer.salario}}</td>
+                    <tr ng-repeat="offer in offers | filter: clave">
+                        <th scope="row">{{offer.position}}</th>
+                        <td>{{offer.enterprise}}</td>
+                        <td>{{offer.travel}}</td>
+                        <td>{{offer.salary}}</td>
                     </tr>
                 </tbody>
             </table>

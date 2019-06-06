@@ -1,4 +1,4 @@
-<nav class="navbar navbar-expand-lg navbar-dark" style="background-color: var(--indigo)">
+<nav class="navbar navbar-expand-lg navbar-dark" style="background-color: var(--indigo)" ng-controller="navController">
     <a class="navbar-brand" href="#/!">Navbar</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -17,10 +17,14 @@
             </li>
         </ul>
         <a href="#!signin">
-            <button type="button" class="btn btn-light mx-2">Registrarse</button>
+            <button type="button" class="btn btn-light mx-2" ng-hide="hide">Registrarse</button>
         </a>
         <a href="#!login">
-            <button type="button mx-2" class="btn btn-light">Iniciar Sesión</button>
+            <button type="button mx-2" class="btn btn-light" ng-hide="hide">Iniciar Sesión</button>
+        </a>
+        <a href="#!cuenta" class="px-3" ng-show="hide">{{email}}</a>
+        <a href="#!login">
+            <button type="button mx-2" class="btn btn-light" ng-show="hide" id="close_session">Cerrar Sesión</button>
         </a>
     </div>
 </nav>
