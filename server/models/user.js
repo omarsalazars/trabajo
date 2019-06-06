@@ -33,7 +33,11 @@ let userSchema = new Schema({
         required:true,
         type: Boolean,
         default: false
-    }
+    },
+    managed_enterprises: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Enterprise'
+    }]
 });
 
 userSchema.plugin(uniqueValidator,{
