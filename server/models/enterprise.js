@@ -20,7 +20,11 @@ let enterpriseSchema = new Schema({
     email:{
         type:String,
         required:true
-    }
+    },
+    admins: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+    }]
 });
 
 enterpriseSchema.plugin(uniqueValidator,{
