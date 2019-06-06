@@ -1,6 +1,9 @@
 const express = require('express');
 const router = express.Router();
 
+const { verifyToken} = require('../middlewares/authentication')
+
+
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
@@ -52,7 +55,7 @@ router.post('/', async function(req, res){
 
 });
 
-router.delete('/usuario/:id', async function(req, res){
+router.delete('/user/:id', async function(req, res){
 
     let id = req.params.id;
 
@@ -145,4 +148,60 @@ router.post('/login', (req, res)=>{
         });
     })
 })
+
+router.post('/upload/:folder', verifyToken, (req, res)=>{
+  
+    if (Object.keys(req.files).length == 0) {
+      return res.status(400)
+      .json({
+          ok:false, 
+          err:{
+              message:'No files were uploaded.'
+          }
+      });
+    }
+  
+    let file = req.files.file;
+    let folder = req.params.folder;
+    let ext = file.name.split('.')[1];  
+
+    let validImageExtensions = ['png', 'jpg'];
+
+    if(folder=='images' && !validImageExtensions.includes(ext)){
+        return res.status(400).json({
+                ok:false,
+                err:{
+                message:'La extensión de la imagen no es valida hdp'
+                }
+            })
+    }
+    if(folder=='curriculums' && ext != 'pdf'){
+        return res.status(400).json({
+                ok:false,
+                err:{
+                message:'El curriculum solo tiene que ser pdf'
+                }
+            })
+    }
+  
+    ///CAMBIAR NOMBRE AL ARCHIVO
+  
+    let fileName = `${req.user._id}.${ext}`;
+  
+    // Use the mv() method to place the file somewhere on your server
+    file.mv(`server/uploads/users/${folder}/${fileName}`, (err)=>{
+      if (err)
+        return res.status(500).json({
+            ok:false,
+            err
+        })
+  
+        //AQUI archivo CARGADo
+  
+      res.json({
+          ok:true, 
+          message:'File uploaded!'
+      });
+    });
+  });
 module.exports = router;
