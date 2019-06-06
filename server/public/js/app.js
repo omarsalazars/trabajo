@@ -13,19 +13,11 @@ app.config(function($routeProvider){
         .when("/empresas",{
         templateUrl: '../enterprises.html',
         controller: 'enterprisesController'
-    })
-    .when("/login",{
-        templateUrl:'../login.html',
-        controller: 'loginController'
     });
 });
 
 app.controller('indexController',function($scope){
 
-});
-
-app.controller('loginController',function($scope){
-    
 });
 
 app.controller('enterprisesController', function($scope){
