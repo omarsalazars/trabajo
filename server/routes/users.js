@@ -1,11 +1,11 @@
 const express = require('express');
 const router = express.Router();
 
-const { verifyToken} = require('../middlewares/authentication');
-const { sendVerificationMail} = require('../helpers/mailing')
+const { verifyToken} = require('../middlewares/authentication')
 
 
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
 let User = require('../models/user');
 
@@ -21,31 +21,6 @@ router.get('/',(req,res)=>{
         res.json({
             ok:true,
             users
-        })
-    })
-})
-
-router.get('/:id', (req,res)=>{
-    let id = req.params.id;
-
-    User.findById(id)
-    .populate('managed_enterprises', 'name')
-    .exec((err, userDB)=>{
-        if(err){
-            return res.status(500).json({
-                ok:false,
-                err
-            })
-        }
-        if(!userDB){
-            return res.status(400).json({
-                ok:false,
-                err
-            })
-        }
-        res.json({
-            ok:true,
-            user:userDB
         })
     })
 })
@@ -70,7 +45,7 @@ router.post('/', async function(req, res){
                 err
             })
         }
-        sendVerificationMail(userDB.email);
+
         res.json({
             ok:true,
             user:userDB
@@ -162,6 +137,10 @@ router.post('/login', (req, res)=>{
             })
         }
 
+        let token = jwt.sign({
+            user: userDB
+        }, process.env.SEED, {expiresIn:60*60*24*30});
+
         res.json({
             ok:true,
             user:userDB,
@@ -224,6 +203,5 @@ router.post('/upload/:folder', verifyToken, (req, res)=>{
           message:'File uploaded!'
       });
     });
-});
-
+  });
 module.exports = router;
