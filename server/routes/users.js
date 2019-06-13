@@ -6,6 +6,7 @@ const { sendVerificationMail} = require('../helpers/mailing')
 
 
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
 let User = require('../models/user');
 
@@ -200,7 +201,7 @@ router.post('/upload/:folder', verifyToken, (req, res)=>{
         return res.status(400).json({
                 ok:false,
                 err:{
-                message:'El curriculum solo tiene que ser pdf'
+                    message:'El curriculum solo tiene que ser pdf'
                 }
             })
     }
