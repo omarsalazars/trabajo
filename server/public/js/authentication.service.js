@@ -14,9 +14,13 @@ function Service($http, $localStorage,$rootScope) {
         $http.post('/api/users/login', { email: email, password: password })
             .then(function (response) {
             // login successful if there's a token in the response
+            console.log(response);
             if (response.data.token) {
                 // store username and token in local storage to keep user logged in between page refreshes
-                $localStorage.currentUser = { email: email, token: response.data.token };
+                $localStorage.currentUser = { 
+                    user : response.data.user,
+                    token: response.data.token
+                };
 
                 // add jwt token to auth header for all requests made by the $http service
                 $http.defaults.headers.common.Authorization = 'Bearer ' + response.data.token;

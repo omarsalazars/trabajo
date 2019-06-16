@@ -1,0 +1,111 @@
+<div class="container py-5">
+    <h1>Mi cuenta</h1>
+    <form id="form" method="post">
+        <div class="row">
+            <div class="col-md-6 col-xs-12">
+                <label>Nombre</label>
+                <input class="form-control" type="text" ng-model="user.first_name">
+            </div>
+            <div class="col-md-6 col-xs-12">
+                <label>Apellidos</label>
+                <input class="form-control" type="text" ng-model="user.last_name">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6 col-xs-12">
+                <label>País</label>
+                <input class="form-control" type="text" ng-model="user.country">
+            </div>
+            <div class="col-md-6 col-xs-12">
+                <label>Email</label>
+                <input class="form-control" type="text" ng-model="user.email">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6 col-xs-12">
+                <label>Teléfono</label>
+                <input class="form-control" type="text" ng-model="user.phone">
+            </div>
+            <div class="col-md-6 col-xs-12">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6 col-xs-12">
+                <label>Foto de perfil</label>
+                <img class="img-fluid img-thumbnail rounded" src="../uploads/users/images/{{user._id}}.jpg">
+            </div>
+            <div class="col-md-6 col-xs-12">
+                <label>Cambiar imagen</label>
+                <input id="imagen" type="file" class="form-control" placeholder="Cambiar imagen" accept="image/png, image/jpeg" value="../uploads/users/images/{{user._id}}.jpg">
+                <label>Curriculum</label>
+                <input class="form-control" type="file" placeholder="Curriculum">
+                <a href="../uploads/users/curriculums/{{user._id}}.pdf">
+                    <p>Curriculum Actual</p>
+                </a>
+            </div>
+        </div>
+        <div class="py-2 text-center">
+            <button class="btn btn-primary" type="button" ng-click="update()">Actualizar información</button>
+        </div>
+    </form>
+    <div class="row">
+        <h3>Empresas manejadas:</h3>
+        <table class="table">
+            <thead class="thead-dark">
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Nombre</th>
+                    <th scope="col">Sitio web</th>
+                    <th scope="col">Teléfono</th>
+                    <th scope="col">Email</th>
+                    <th scope="col"></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="e in enterprises">
+                    <th scope="row">{{e._id}}</th>
+                    <td>{{e.name}}</td>
+                    <td>{{e.website}}</td>
+                    <td>{{e.phone}}</td>
+                    <td>{{e.email}}</td>
+                    <td>
+                        <button type="button" class="btn btn-info">
+                            Administrar
+                        </button>
+                    </td>
+                </tr>
+                <tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="row">
+        <h3>Ofertas aplicadas:</h3>
+        <table class="table">
+            <thead class="thead-dark">
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Nombre</th>
+                    <th scope="col">Sitio web</th>
+                    <th scope="col">Teléfono</th>
+                    <th scope="col">Email</th>
+                    <th scope="col"></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="o in offers">
+                    <th scope="row">{{e._id}}</th>
+                    <td>{{e.name}}</td>
+                    <td>{{e.website}}</td>
+                    <td>{{e.phone}}</td>
+                    <td>{{e.email}}</td>
+                    <td>
+                        <button type="button" class="btn btn-info">
+                            Administrar
+                        </button>
+                    </td>
+                </tr>
+                <tr>
+            </tbody>
+        </table>
+    </div>
+</div>

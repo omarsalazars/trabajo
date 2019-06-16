@@ -17,6 +17,10 @@ app.config(function($routeProvider){
         .when("/login",{
         templateUrl:'../login.html',
         controller: 'loginController'
+    })
+        .when("/cuenta",{
+        templateUrl: '../account.html',
+        controller: 'accountController'
     });
 });
 
@@ -37,14 +41,73 @@ angular.module('myApp').run(function($rootScope, $http, $location, $localStorage
     });
 });
 
+app.controller('accountController',function($scope,$localStorage,$http){
+    var url = 'http://localhost:3000/api/users/'+$localStorage.currentUser.user._id;
+    $http({
+        method: 'GET',
+        url: url,
+    }).then(
+        function success(response){
+            console.log(response);
+            $scope.user = response.data.user;
+        },
+        function error(response){
+            console.log(response);
+        }
+    );
+
+    $scope.enterprises = []; angular.forEach($localStorage.currentUser.user.managed_enterprises, function(value, key){
+        url = 'http://localhost:3000/api/enterprises/'+value;
+        $http({
+            method: 'GET',
+            url: url,
+        }).then(
+            function success(response){
+                console.log(response);
+                $scope.enterprises.push(response.data.enterprise);
+            },
+            function error(response){
+                console.log(response);
+            }
+        );
+    });
+
+    $scope.update = function(){
+        var form = document.querySelector("#form");
+        var formData = new FormData(form);
+        var file = document.querySelector("#imagen");
+        console.log($localStorage.currentUser.token);
+        console.log(file.files[0]);
+        var url = 'http://localhost:3000/api/users/upload/images/';
+        $http({
+            url: url,
+            method: 'POST',
+            data: {
+                //form: file.files,
+                token : $localStorage.currentUser.token
+            },
+            params: {
+                token : $localStorage.currentUser.token
+            }
+        }).then(
+            function success(response){
+                console.log(response);
+            },
+            function error(response){
+                console.log(response);
+            }
+        );
+    }
+});
+
 app.controller('navController',function($scope, $localStorage, $rootScope){
-    
+
     checkLogin();
-    
+
     $rootScope.$on('$routeChangeStart', function (event, next, current) {
         checkLogin();
     });
-    
+
     function checkLogin(){
         if($localStorage.currentUser){
             $rootScope.hide = true;
@@ -54,7 +117,7 @@ app.controller('navController',function($scope, $localStorage, $rootScope){
             $rootScope.hide = false;
         }
     }
-    
+
 });
 
 app.controller('indexController',function($scope){
@@ -81,35 +144,6 @@ app.controller('loginController',function($scope, $location, AuthenticationServi
         AuthenticationService.Logout();
     }
 });
-
-/*
-app.controller('loginController',function($scope, $http, $httpParamSerializer, $localStorage){
-
-
-    $scope.login = function(){
-        $http({
-            method: 'POST',
-            url: 'http://localhost:3000/api/users/login',
-            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-            transformRequest: $httpParamSerializer,
-            data:{
-                email: $scope.user.email,
-                password: $scope.user.password
-            }
-        }).then(function(response){
-            alert('animo se hizo la machaca');
-            console.log(response);
-            $localStorage.currentUser = {email:$scope.user.email, token: response.data.token};
-            // add jwt token to auth header for all requests made by the $http service
-            $http.defaults.headers.common.Authorization = 'Bearer ' + response.data.token;
-            callback(true);
-        }, function(response){
-            alert('Usuario o contraseña incorrectos :(');
-            callback(false);
-        });
-    };
-});
-*/
 
 app.controller('enterprisesController', function($scope){
     $scope.split_enterprises=[
