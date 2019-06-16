@@ -85,8 +85,9 @@ app.controller('accountController',function($scope,$localStorage,$http){
             url: url,
             method: 'POST',
             headers: {
-                token: $localStorage.currentUser.token
-            }
+                token: $localStorage.currentUser.token,
+                'Content-Type' : undefined
+            },
             data: data
         }).then(
             function success(response){
