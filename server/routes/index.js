@@ -16,7 +16,20 @@ router.get('/verify', (req,res)=>{
         }
         User.findOneAndUpdate({email:decoded.email}, {verified:true}, {new:true})
         .exec((err,userDB)=>{
-            res.redirect('localhost:3000/login');
+            if(err){
+                return res.json({
+                    err
+                })
+            }
+            if(!userDB){
+                return res.json({
+                    err:{
+                        message:'Valio verga el usuario'
+                    }
+                })
+            }
+            console.log('Aqui va el redirect');
+            res.redirect('');
         })
     })
 })
