@@ -8,6 +8,7 @@ let User = require('../models/user');
 
 router.get('/',(req,res)=>{
     Enterprise.find({})
+    .populate('admins')
     .exec((err, enterprises)=>{
         if(err){
             return res.status(500).json({
@@ -31,7 +32,7 @@ router.get('/:id', (req,res)=>{
     let id = req.params.id;
 
     Enterprise.findById(id)
-    .populate('admins', 'email')
+    .populate('admins')
     .exec((err, enterpriseDB)=>{
         if(err){
             return res.status(500).json({
@@ -142,7 +143,8 @@ router.post('/:id/addAdmin', verifyToken, async (req,res)=>{
                 })
             }
             res.json({
-                enterpriseDB
+                enterpriseDB,
+                userDB
             })
         })
     })

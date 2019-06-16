@@ -30,7 +30,6 @@ router.get('/verify', (req,res)=>{
                 })
             }
             console.log('Aqui va el redirect');
-            res.redirect('');
         })
     })
 })
