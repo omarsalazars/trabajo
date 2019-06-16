@@ -31,7 +31,7 @@ router.get('/:id', (req,res)=>{
     let id = req.params.id;
 
     User.findById(id)
-    .populate('managed_enterprises', 'name')
+    .populate('managed_enterprises')
     .exec((err, userDB)=>{
         if(err){
             return res.status(500).json({
@@ -216,7 +216,7 @@ router.post('/upload/:folder', verifyToken, (req, res)=>{
     let fileName = `${req.user._id}.${ext}`;
   
     // Use the mv() method to place the file somewhere on your server
-    file.mv(`server/uploads/users/${folder}/${fileName}`, (err)=>{
+    file.mv(`server/public/uploads/users/${folder}/${fileName}`, (err)=>{
       if (err)
         return res.status(500).json({
             ok:false,

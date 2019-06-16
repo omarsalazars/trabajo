@@ -13,6 +13,7 @@ var offers = require('./routes/offers');
 var users = require('./routes/users');
 var enterprises = require('./routes/enterprises');
 var tests = require('./routes/tests');
+var applications = require('./routes/applications');
 
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
@@ -24,6 +25,7 @@ app.use('/api/offers', offers);
 app.use('/api/users', users);
 app.use('/api/enterprises', enterprises);
 app.use('/tests', tests);
+app.use('/api/applications', applications);
 app.use(express.static(path.join(__dirname,'public')));
 
 mongoose.connect(process.env.URLDB,{

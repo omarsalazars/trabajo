@@ -4,8 +4,8 @@ let Schema = mongoose.Schema;
 
 let offerSchema = new Schema({
     enterprise:{
-        type:String,
-        required:true
+        type: Schema.Types.ObjectId,
+        ref: 'Enterprise'
     },
     position:{
         type:String,
@@ -25,5 +25,6 @@ let offerSchema = new Schema({
     }
 });
 
-/// EN ESTA SIGUIENTE LINEA YA SE CREA EL MODELO USERS
+
+/// EN ESTA SIGUIENTE LINEA YA SE CREA EL MODELO OFFERS
 module.exports = mongoose.model('Offer', offerSchema);
