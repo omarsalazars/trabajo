@@ -1,5 +1,7 @@
 const express = require('express');
 const router = express.Router();
+const jwt = require('jsonwebtoken');
+
 
 const { verifyToken} = require('../middlewares/authentication');
 const { sendVerificationMail} = require('../helpers/mailing')
@@ -161,6 +163,10 @@ router.post('/login', (req, res)=>{
                 }
             })
         }
+
+        let token = jwt.sign({
+            user:userDB
+        }, process.env.SEED, {expiresIn:60*60*24*30});
 
         res.json({
             ok:true,
