@@ -74,21 +74,20 @@ app.controller('accountController',function($scope,$localStorage,$http){
 
     $scope.update = function(){
         var form = document.querySelector("#form");
-        var formData = new FormData(form);
-        var file = document.querySelector("#imagen");
-        console.log($localStorage.currentUser.token);
-        console.log(file.files[0]);
+        var formData = new FormData();
+        var file = $("#imagen").prop('files')[0];
+        formData.append('file',file);
+
         var url = 'http://localhost:3000/api/users/upload/images/';
+        var data = formData;
+        console.log(data);
         $http({
             url: url,
             method: 'POST',
-            data: {
-                //form: file.files,
-                token : $localStorage.currentUser.token
-            },
-            params: {
-                token : $localStorage.currentUser.token
+            headers: {
+                token: $localStorage.currentUser.token
             }
+            data: data
         }).then(
             function success(response){
                 console.log(response);
