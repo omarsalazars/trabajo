@@ -35,7 +35,7 @@
                 <tbody>
                     <tr ng-repeat="offer in offers | filter: clave">
                         <th scope="row">{{offer.position}}</th>
-                        <td>{{offer.enterprise}}</td>
+                        <td>{{offer.enterprise.name}}</td>
                         <td>{{offer.travel}}</td>
                         <td>{{offer.salary}}</td>
                     </tr>

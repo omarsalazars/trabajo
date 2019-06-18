@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
+var multer = require('multer');
 
 
 const { verifyToken} = require('../middlewares/authentication');
@@ -13,7 +14,7 @@ let User = require('../models/user');
 
 router.get('/',(req,res)=>{
     User.find({})
-    .exec((err, users)=>{
+        .exec((err, users)=>{
         if(err){
             return res.status(500).json({
                 ok:false,
@@ -31,8 +32,8 @@ router.get('/:id', (req,res)=>{
     let id = req.params.id;
 
     User.findById(id)
-    .populate('managed_enterprises')
-    .exec((err, userDB)=>{
+        .populate('managed_enterprises')
+        .exec((err, userDB)=>{
         if(err){
             return res.status(500).json({
                 ok:false,
@@ -138,7 +139,7 @@ router.delete('/user/:id', async function(req, res){
 
 router.post('/login', (req, res)=>{
     let body = req.body;
-    
+
     User.findOne({email:body.email}, (err, userDB)=>{
         if(err){
             return res.status(500).json({
@@ -184,18 +185,20 @@ router.post('/login', (req, res)=>{
     })
 })
 
-router.post('/upload/:folder', verifyToken, (req, res)=>{
-  
+router.post('/upload/:folder', [verifyToken, multer({dest: 'public/uploads/images'}).single('file') ], (req, res)=>{
+
+    console.log(__dirname);
+
     if (Object.keys(req.files).length == 0) {
-      return res.status(400)
-      .json({
-          ok:false, 
-          err:{
-              message:'No files were uploaded.'
-          }
-      });
+        return res.status(400)
+            .json({
+            ok:false, 
+            err:{
+                message:'No files were uploaded.'
+            }
+        });
     }
-  
+
     let file = req.files.file;
     let folder = req.params.folder;
     let ext = file.name.split('.');
@@ -205,39 +208,39 @@ router.post('/upload/:folder', verifyToken, (req, res)=>{
 
     if(folder=='images' && !validImageExtensions.includes(ext)){
         return res.status(400).json({
-                ok:false,
-                err:{
+            ok:false,
+            err:{
                 message:'La extensión de la imagen no es valida hdp'
-                }
-            })
+            }
+        })
     }
     if(folder=='curriculums' && ext != 'pdf'){
         return res.status(400).json({
-                ok:false,
-                err:{
-                message:'El curriculum solo tiene que ser pdf'
-                }
-            })
-    }
-  
-    ///CAMBIAR NOMBRE AL ARCHIVO
-  
-    let fileName = `${req.user._id}.${ext}`;
-    
-    // Use the mv() method to place the file somewhere on your server
-    file.mv(`${__dirname}/../../server/public/uploads/users/${folder}/${fileName}`, (err)=>{
-      if (err)
-        return res.status(500).json({
             ok:false,
-            err
+            err:{
+                message:'El curriculum solo tiene que ser pdf'
+            }
         })
-  
+    }
+
+    ///CAMBIAR NOMBRE AL ARCHIVO
+
+    let fileName = `${req.user._id}.${ext}`;
+    // Use the mv() method to place the file somewhere on your server
+
+    file.mv(`${__dirname}/../../server/public/uploads/users/${folder}/${fileName}`, (err)=>{
+        if (err)
+            return res.status(500).json({
+                ok:false,
+                err
+            })
+
         //AQUI archivo CARGADo
-  
-      res.json({
-          ok:true, 
-          message:'File uploaded!'
-      });
+
+        res.json({
+            ok:true, 
+            message:'File uploaded!'
+        });
     });
 });
 

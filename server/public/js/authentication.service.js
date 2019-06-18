@@ -21,7 +21,8 @@ function Service($http, $localStorage,$rootScope) {
                     user : response.data.user,
                     token: response.data.token
                 };
-
+                $rootScope.email = $localStorage.currentUser.user.email;
+                $rootScope.logged=true;
                 // add jwt token to auth header for all requests made by the $http service
                 $http.defaults.headers.common.Authorization = 'Bearer ' + response.data.token;
                 
@@ -37,7 +38,7 @@ function Service($http, $localStorage,$rootScope) {
 
     function Logout() {
         // remove user from local storage and clear http auth header
-        $rootScope.hide = false;
+        $rootScope.logged = false;
         delete $localStorage.currentUser;
         $http.defaults.headers.common.Authorization = '';
     }

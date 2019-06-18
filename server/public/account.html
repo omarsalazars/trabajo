@@ -32,13 +32,18 @@
         <div class="row">
             <div class="col-md-6 col-xs-12">
                 <label>Foto de perfil</label>
-                <img class="img-fluid img-thumbnail rounded" src="../uploads/users/images/{{user._id}}.jpg">
+                <img id="profile" class="img-fluid img-thumbnail rounded" src="../uploads/users/images/{{user._id}}.jpg">
             </div>
             <div class="col-md-6 col-xs-12">
-                <label>Cambiar imagen</label>
-                <input id="imagen" type="file" class="form-control" placeholder="Cambiar imagen" accept="image/png, image/jpeg" value="../uploads/users/images/{{user._id}}.jpg">
-                <label>Curriculum</label>
-                <input class="form-control" type="file" placeholder="Curriculum">
+                <label>Archivos</label>
+                <div class="custom-file">
+                    <label for="imagen" class="custom-file-label">Cambiar imagen</label>
+                    <input id="imagen" type="file" class="custom-file-input" placeholder="Cambiar imagen" accept="image/png, image/jpeg" value="../uploads/users/images/{{user._id}}.jpg">
+                </div>
+                <div class="custom-file my-3">
+                    <label for="curriculum" class="custom-file-label">Curriculum</label>
+                    <input id="curriculum" class="custom-file-input" type="file" placeholder="Curriculum" lang="es">
+                </div>
                 <a href="../uploads/users/curriculums/{{user._id}}.pdf">
                     <p>Curriculum Actual</p>
                 </a>
@@ -69,9 +74,11 @@
                     <td>{{e.phone}}</td>
                     <td>{{e.email}}</td>
                     <td>
-                        <button type="button" class="btn btn-info">
-                            Administrar
-                        </button>
+                        <a ng-href="#!empresa/{{e._id}}">
+                            <button type="button" class="btn btn-info">
+                                Administrar
+                            </button>
+                        </a>
                     </td>
                 </tr>
                 <tr>

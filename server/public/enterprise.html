@@ -1,0 +1,99 @@
+<div class="container py-5">
+    <h1>{{enterprise.name}}</h1>
+    <div class="row">
+        <div class="col-md-6 col-xs-12">
+            <label>Nombre</label>
+            <input class="form-control" type="text" ng-model="enterprise.name">
+        </div>
+        <div class="col-md-6 col-xs-12">
+            <label>Email</label>
+            <input class="form-control" type="text" ng-model="enterprise.email">
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6 col-xs-12">
+            <label>Sitio web</label>
+            <input class="form-control" type="text" ng-model="enterprise.website">
+        </div>
+        <div class="col-md-6 col-xs-12">
+            <label>Telefono</label>
+            <input class="form-control" type="text" ng-model="enterprise.phone">
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6 col-xs-12">
+        </div>
+        <div class="col-md-6 col-xs-12">
+        </div>
+    </div>
+    <div class="text-center py-3">
+        <button type="button" class="btn btn-info" ng-click="update()">Actualizar información</button>
+    </div>
+    <div class="row">
+        <h3>Ofertas</h3>
+        <table class="table table-responsive">
+            <thead class="thead-dark">
+                <tr>
+                    <th scope="col">Id</th>
+                    <th scope="col">Puesto</th>
+                    <th scope="col">Descripción</th>
+                    <th scope="col">Salario</th>
+                    <th scope="col">Viajar</th>
+                    <th scope="col"></th>
+                    <th scope="col"></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="o in offers">
+                    <th scope="row">{{o._id}}</th>
+                    <td>{{o.position}}</td>
+                    <td>{{o.description}}</td>
+                    <td>{{o.salary}}</td>
+                    <td>{{o.travel}}</td>
+                    <td>
+                        <button type="button" class="btn btn-danger" ng-click="deleteOffer()">Eliminar</button>
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-info">
+                            Modificar
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="row">
+        <h3>Administradores</h3>
+        <table class="table table-responsive">
+            <thead class="thead-dark">
+                <tr>
+                    <th scope="col">Id</th>
+                    <th scope="col">Nombre</th>
+                    <th scope="col">Apellidos</th>
+                    <th scope="col">Email</th>
+                    <th scope="col"></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="a in admins">
+                    <th scope="row">{{a._id}}</th>
+                    <td>{{a.first_name}}</td>
+                    <td>{{a.last_name}}</td>
+                    <td>{{a.email}}</td>
+                    <td>
+                        <button type="button" class="btn btn-danger" ng-click="deleteAdmin()">Eliminar Administrador</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <h3>Añadir administrador</h3>
+    <div class="row">
+        <div class="col-md-8 col-xs-12">
+            <input type="text" class="form-control" placeholder="Email">
+        </div>
+        <div class="col-md-4 col-xs-12">
+            <button type="button" class="btn btn-success">Añadir administrador</button>
+        </div>
+    </div>
+</div>

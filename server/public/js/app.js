@@ -21,6 +21,10 @@ app.config(function($routeProvider){
         .when("/cuenta",{
         templateUrl: '../account.html',
         controller: 'accountController'
+    })
+        .when("/empresa/:id",{
+        templateUrl: '../enterprise.html',
+        controller: 'enterpriseController'
     });
 });
 
@@ -28,6 +32,9 @@ angular.module('myApp').run(function($rootScope, $http, $location, $localStorage
     // keep user logged in after page refresh
     if ($localStorage.currentUser) {
         $http.defaults.headers.common.Authorization = 'Bearer ' + $localStorage.currentUser.token;
+        $rootScope.email=$localStorage.currentUser.user.email;
+        $rootScope.logged=true;
+        console.log($localStorage.currentUser.user.email);
     }
 
     // redirect to login page if not logged in and trying to access a restricted page
@@ -35,10 +42,32 @@ angular.module('myApp').run(function($rootScope, $http, $location, $localStorage
         var publicPages = ['/login','/','/buscar','/signin'];
         var restrictedPage = publicPages.indexOf($location.path()) === -1;
         if (restrictedPage && !$localStorage.currentUser) {
-            $rootScope.hide=false;
             $location.path('/');
         }
     });
+});
+
+app.controller('enterpriseController',function($http,$localStorage,$scope,$routeParams){
+    var url = 'http://localhost:3000/api/enterprises/'+$routeParams.id;
+    console.log(url);
+    $http({
+        method: 'GET',
+        url: url
+    }).then(
+        function success(response){
+            console.log(response);
+            $scope.enterprise = response.data.enterprise;
+            $scope.admins = $scope.enterprise.admins;
+        },
+        function error(response){
+            console.log(response);
+        }
+    );
+    
+    //Get offers by enterprise id
+    //Get Applications by enterprise id
+    //createOffer
+    
 });
 
 app.controller('accountController',function($scope,$localStorage,$http){
@@ -73,51 +102,37 @@ app.controller('accountController',function($scope,$localStorage,$http){
     });
 
     $scope.update = function(){
+
+        //falta actualizar usuario por PUT
+
         var form = document.querySelector("#form");
-        var formData = new FormData(form);
-        var file = document.querySelector("#imagen");
-        console.log($localStorage.currentUser.token);
-        console.log(file.files[0]);
+        var formData = new FormData();
+        var file = $("#imagen").prop('files')[0];
+        formData.append('file',file);
+
         var url = 'http://localhost:3000/api/users/upload/images/';
+        var data = formData;
+        console.log(data);
         $http({
             url: url,
             method: 'POST',
-            data: {
-                //form: file.files,
-                token : $localStorage.currentUser.token
+            headers: {
+                token: $localStorage.currentUser.token,
+                'Content-Type' : undefined
             },
-            params: {
-                token : $localStorage.currentUser.token
-            }
+            data: data
         }).then(
             function success(response){
                 console.log(response);
+                var image = document.querySelector('#profile').src;
+                document.querySelector('#profile').src='';
+                document.querySelector('#profile').src=image;
             },
             function error(response){
                 console.log(response);
             }
         );
     }
-});
-
-app.controller('navController',function($scope, $localStorage, $rootScope){
-
-    checkLogin();
-
-    $rootScope.$on('$routeChangeStart', function (event, next, current) {
-        checkLogin();
-    });
-
-    function checkLogin(){
-        if($localStorage.currentUser){
-            $rootScope.hide = true;
-            $scope.email = $localStorage.currentUser.email;
-        }
-        else{
-            $rootScope.hide = false;
-        }
-    }
-
 });
 
 app.controller('indexController',function($scope){
