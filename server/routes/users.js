@@ -163,6 +163,14 @@ router.post('/login', (req, res)=>{
                 }
             })
         }
+        if(!userDB.verified){
+            return res.status(400).json({
+                ok:false,
+                err:{
+                    message:'Por favor verifica tu cuenta para iniciar sesión'
+                }
+            })
+        }
 
         let token = jwt.sign({
             user:userDB
@@ -190,7 +198,8 @@ router.post('/upload/:folder', verifyToken, (req, res)=>{
   
     let file = req.files.file;
     let folder = req.params.folder;
-    let ext = file.name.split('.')[1];  
+    let ext = file.name.split('.');
+    ext = ext[ext.length-1];  
 
     let validImageExtensions = ['png', 'jpg'];
 
@@ -214,9 +223,9 @@ router.post('/upload/:folder', verifyToken, (req, res)=>{
     ///CAMBIAR NOMBRE AL ARCHIVO
   
     let fileName = `${req.user._id}.${ext}`;
-  
+    
     // Use the mv() method to place the file somewhere on your server
-    file.mv(`server/public/uploads/users/${folder}/${fileName}`, (err)=>{
+    file.mv(`${__dirname}/../../server/public/uploads/users/${folder}/${fileName}`, (err)=>{
       if (err)
         return res.status(500).json({
             ok:false,
