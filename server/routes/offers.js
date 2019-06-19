@@ -5,7 +5,7 @@ let Offer = require('../models/offer');
 
 router.get('/',(req,res)=>{
     Offer.find({})
-    .populate('enterprise')
+    .populate('enterprise', 'name')
     .exec((err, offers)=>{
         if(err){
             return res.status(500).json({
