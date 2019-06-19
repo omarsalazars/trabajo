@@ -89,6 +89,32 @@ app.controller('enterpriseController',function($http,$localStorage,$scope,$route
         }
     );
 
+    var url = 'http://localhost:3000/api/applications/enterprise/'+$routeParams.id;
+    $http({
+        method:'GET',
+        url: url
+    }).then(
+        function success(response){
+            $scope.applications = response.data.applications;
+        },
+        function error(response){
+            console.log("No hay applications");
+        }
+    );
+
+    var url = 'http://localhost:3000/api/offers/enterprise/'+$routeParams.id;
+    $http({
+        method:'GET',
+        url: url
+    }).then(
+        function success(response){
+            $scope.offers = response.data.offers;
+        },
+        function error(response){
+            console.log("No hay applications");
+        }
+    );
+
     //Get offers by enterprise id
     //Get Applications by enterprise id
     //createOffer

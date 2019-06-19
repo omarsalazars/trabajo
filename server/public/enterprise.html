@@ -62,6 +62,42 @@
             </tbody>
         </table>
     </div>
+    
+    <div class="row">
+        <h3>Aplicaciones</h3>
+        <table class="table table-responsive">
+            <thead class="thead-dark">
+                <tr>
+                    <th scope="col">Id Aplicación</th>
+                    <th scope="col">Id Oferta</th>
+                    <th scope="col">Aplicante</th>
+                    <th scope="col">Puesto</th>
+                    <th scope="col">Estado</th>
+                    <th scope="col"></th>
+                    <th scope="col"></th>
+                    <th scope="col"></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="app in applications">
+                    <td>{{app._id}}</td>
+                    <td>{{app.offer._id}}</td>
+                    <td>{{app.user.first_name}} {{app.user.last_name}}</td>
+                    <td>{{app.offer.position}}</td>
+                    <td>{{app.stage}}</td>
+                    <td>
+                        <button type="button" class="btn btn-danger" ng-click="deleteOffer()">Eliminar</button>
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-info">
+                            Modificar
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    
     <div class="row">
         <h3>Administradores</h3>
         <table class="table table-responsive">
