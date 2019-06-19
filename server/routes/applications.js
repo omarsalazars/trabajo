@@ -97,8 +97,8 @@ router.get('/enterprise/:id', (req, res)=>{
             enterpriseOffers.push(offersDB[i]._id);
         }
         Application.find({offer: {$in :enterpriseOffers}})
-        .populate({path:'offer', populate:{path:'enterprise', select:'name'}})
-        .populate('user', 'name')
+        .populate({path:'offer', populate:{path:'enterprise'}})
+        .populate('user')
         .exec((err, applicationsDB)=>{
             if(err){
                 return res.status(500).json({
@@ -126,7 +126,7 @@ router.get('/user/:id', (req, res)=>{
     let id = req.params.id;
 
     Application.find({user:id})
-        .populate('user', 'email')
+        .populate('user')
         .populate('offer')
         .exec((err, applicationsDB)=>{
         if(err){
@@ -155,7 +155,7 @@ router.get('/offer/:id', (req, res)=>{
     let id = req.params.id;
 
     Application.find({offer:id})
-        .populate('user', 'email')
+        .populate('user')
         .populate('offer')
         .exec((err, applicationsDB)=>{
         if(err){
@@ -185,7 +185,7 @@ router.get('/:id', (req, res)=>{
     let id = req.params.id;
 
     Application.findById(id)
-        .populate('user', 'email')
+        .populate('user')
         .populate('offer')
         .exec((err, applicationDB)=>{
         if(err){

@@ -53,7 +53,7 @@ router.get('/enterprise/:id', async (req, res)=>{
     let id = req.params.id;
 
     await Offer.find({enterprise:id})
-    .populate('enterprise', 'name')
+    .populate('enterprise')
     .exec( (err, offers)=>{
         if(err){
             return res.status(500).json({
