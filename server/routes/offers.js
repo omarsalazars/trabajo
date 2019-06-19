@@ -74,4 +74,32 @@ router.get('/enterprise/:id', async (req, res)=>{
     })
 })
 
+
+//UPDATE OFERTA
+router.put('/:id', function(req, res){
+    let id = req.params.id;
+    let body = req.body;
+    Offer.findByIdAndUpdate(id, {
+            $set:{
+                position: body.position,
+                description:body.description,
+                salary:parseInt(body.salary),
+                travel:body.travel
+            }
+        },{new:true,runValidators:true} ,(err, enterpriseDB)=>{
+
+        if(err){
+            return res.status(400).json({
+                ok:false,
+                err
+            })
+        }
+
+        res.json({
+            ok:true,
+            enterprise: enterpriseDB
+        });
+    });
+});
+
 module.exports = router;

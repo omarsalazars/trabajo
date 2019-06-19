@@ -2,8 +2,6 @@ const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 var multer = require('multer');
-const _ = require('underscore');
-
 
 const { verifyToken} = require('../middlewares/authentication');
 const { sendVerificationMail} = require('../helpers/mailing')
@@ -248,10 +246,15 @@ router.post('/upload/:folder', [verifyToken, multer({dest: 'public/uploads/image
 
 router.put('/:id', function(req, res){
     let id = req.params.id;
-
-    let body = _.pick( req.body, ['first_name','last_name', 'country', 'phone']);
-
-    User.findByIdAndUpdate(id, body,{new:true,runValidators:true} ,(err, userDB)=>{
+    let body = req.body;
+    User.findByIdAndUpdate(id, {
+            $set:{
+                first_name:body.first_name,
+                last_name:body.last_name,
+                country:body.country,
+                phone:body.phone
+            }
+        },{new:true,runValidators:true} ,(err, userDB)=>{
 
         if(err){
             return res.status(400).json({

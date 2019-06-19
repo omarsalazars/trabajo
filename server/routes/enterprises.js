@@ -55,7 +55,7 @@ router.get('/:id', (req,res)=>{
 
 
 /// CREAR EMPRESA
-router.post('/',verifyToken, async function(req, res){
+router.post('/',verifyToken, function(req, res){
     let body = req.body;
 
     let enterprise = new Enterprise({
@@ -66,7 +66,7 @@ router.post('/',verifyToken, async function(req, res){
         admins : req.user._id
     });
 
-    await enterprise.save((err, enterpriseDB)=>{
+    enterprise.save((err, enterpriseDB)=>{
 
         if(err){
             return res.status(400).json({
@@ -148,8 +148,33 @@ router.post('/:id/addAdmin', verifyToken, async (req,res)=>{
             })
         })
     })
-    
-    
 })
+
+//UPDATE EMPRESA
+router.put('/:id', function(req, res){
+    let id = req.params.id;
+    let body = req.body;
+    Enterprise.findByIdAndUpdate(id, {
+            $set:{
+                name : body.name,
+                email : body.email,
+                website : body.website,
+                phone : body.phone,
+            }
+        },{new:true,runValidators:true} ,(err, enterpriseDB)=>{
+
+        if(err){
+            return res.status(400).json({
+                ok:false,
+                err
+            })
+        }
+
+        res.json({
+            ok:true,
+            enterprise: enterpriseDB
+        });
+    });
+});
 
 module.exports = router;
