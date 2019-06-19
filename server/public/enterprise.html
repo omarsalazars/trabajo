@@ -1,5 +1,22 @@
 <div class="container py-5">
     <h1>{{enterprise.name}}</h1>
+
+    <div class="row my-3">
+        <div class="profile-picture col-md-12">
+            <img class="img-fluid" src="uploads/users/images/5cf725534f2b4a2c88a3f802.jpg">
+        </div>
+    </div>
+    <div class="row my-3">
+        <div class="col-md-12">
+            <div class="custom-file">
+                <label for="imagen" class="custom-file-label">Cambiar imagen</label>
+                <input id="imagen" type="file" class="custom-file-input" placeholder="Cambiar imagen" accept="image/png, image/jpeg" value="../uploads/enterprises/images/{{enterprise._id}}.jpg">
+            </div>
+        </div>
+    </div>
+
+
+
     <div class="row">
         <div class="col-md-6 col-xs-12">
             <label>Nombre</label>
@@ -54,9 +71,11 @@
                         <button type="button" class="btn btn-danger" ng-click="deleteOffer()">Eliminar</button>
                     </td>
                     <td>
-                        <button type="button" class="btn btn-info">
-                            Modificar
-                        </button>
+                        <a href="#!offer/{{o._id}}">
+                            <button type="button" class="btn btn-info">
+                                Modificar
+                            </button>
+                        </a>
                     </td>
                 </tr>
             </tbody>
@@ -142,7 +161,7 @@
                     <td>{{a.last_name}}</td>
                     <td>{{a.email}}</td>
                     <td>
-                        <button type="button" class="btn btn-danger" ng-click="deleteAdmin()">Eliminar Administrador</button>
+                        <button type="button" class="btn btn-danger" ng-click="deleteAdmin(a._id)">Eliminar Administrador</button>
                     </td>
                 </tr>
             </tbody>

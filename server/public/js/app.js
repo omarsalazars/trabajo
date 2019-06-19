@@ -37,28 +37,62 @@ app.config(function($routeProvider){
         .when("/offer/:id",{
         templateUrl: '../offer.html',
         controller: 'offerController'
-    })
-    ;
+    });
 });
+
+
+
+
+
+
+
 
 
 
 app.controller("offerController",function($scope,$http,$routeParams){
-    
-    function getOffer = function(){
-        var url = getUrl() + '/api/offers';
+
+    $scope.getOffer = function(){
+        var url = getUrl() + '/api/offers/' + $routeParams.id;
+        console.log(url);
+        $http({
+            method: 'GET',
+            url: url
+        }).then(
+            function success(response){
+                $scope.offer = response.data.offer;
+            },
+            function error(response){
+                console.log("No existe la oferta");
+            }
+        );
     };
-    
-    
-    
+
+    $scope.updateOffer = function(){
+        var url = getUrl() + '/api/offers/' + $routeParams.id;
+
+        $http({
+            method: 'PUT',
+            url: url,
+            data: {
+                enterprise: $scope.offer.enterprise,
+                position: $scope.offer.position,
+                description: $scope.offer.description,
+                salary: $scope.offer.salary,
+                travel: $scope.offer.travel
+            }
+        }).then(
+            function success(response){
+                alert('Oferta actualizada correctamente')
+            },
+            function error(response){
+                alert('Error actualizando la oferta');
+            }
+        );
+    }
+
+    $scope.getOffer();
+
 });
-
-
-
-
-
-
-
 
 app.controller("publicEnterpriseController",function($scope,$http,$routeParams){
 
@@ -87,8 +121,9 @@ app.controller("publicEnterpriseController",function($scope,$http,$routeParams){
 
 app.controller('enterpriseController',function($http,$localStorage,$scope,$routeParams,$window){
 
+    
+    //GET ENTERPRISE INFO
     $scope.getEnterprise = function(){
-        //GET ENTERPRISE INFO
         var url = getUrl() + '/api/enterprises/'+$routeParams.id;
         console.log(url);
         $http({
@@ -106,6 +141,25 @@ app.controller('enterpriseController',function($http,$localStorage,$scope,$route
         );
     };
 
+    //PUT ENTERPRISE
+    $scope.updateEnterprise = function(){
+        var url = getUrl() + '/api/enterprises/' +$routeParams.id;
+        $http({
+            method: 'PUT',
+            url: url,
+            data: {
+                
+            }
+        }).then(
+            function success(response){
+                
+            },
+            function error(response){
+                
+            }
+        );
+    };
+    
 
     //GET APPLICATIONS
     $scope.getApplications = function(){
@@ -169,10 +223,7 @@ app.controller('enterpriseController',function($http,$localStorage,$scope,$route
 
     //POST ADMIN
     $scope.addAdmin = function(){
-        console.log('ADD ADMIN');
         var url = getUrl() + '/api/enterprises/'+ $routeParams.id + '/addAdmin';
-        console.log($scope.newAdmin.email);
-        console.log(url);
 
         $http({
             method: 'POST',
@@ -186,8 +237,6 @@ app.controller('enterpriseController',function($http,$localStorage,$scope,$route
         }).then(
             function success(response){
                 alert('Administrador añadido correctamente');
-                console.log('aaa');
-                console.log(response);
                 $scope.getEnterprise();
             },
             function error(response){
@@ -195,6 +244,29 @@ app.controller('enterpriseController',function($http,$localStorage,$scope,$route
             }
         );
     };
+
+    $scope.deleteAdmin = function(idAdmin){
+        var url = getUrl() + '/api/enterprises/'+ $routeParams.id + '/deleteAdmin/'+idAdmin;
+
+        $http({
+            method: 'DELETE',
+            url: url,
+            headers: {
+                token: $localStorage.currentUser.token
+            },
+            data: {
+                _id: idAdmin
+            }
+        }).then(
+            function success(response){
+                alert('Administrador borrado correctamente');
+                $scope.getEnterprise();
+            },
+            function error(response){
+                alert('No se pudo borrar al administrador');
+            }
+        );
+    }
 
     $scope.getEnterprise();
     $scope.getApplications();
