@@ -33,30 +33,36 @@ app.config(function($routeProvider){
         .when("/usuario/:id",{
         templateUrl: '../user.html',
         controller:'userController'
-    });
+    })
+        .when("/offer/:id",{
+        templateUrl: '../offer.html',
+        controller: 'offerController'
+    })
+    ;
 });
 
-angular.module('myApp').run(function($rootScope, $http, $location, $localStorage, $templateCache){
-    // keep user logged in after page refresh
-    if ($localStorage.currentUser) {
-        $http.defaults.headers.common.Authorization = 'Bearer ' + $localStorage.currentUser.token;
-        $rootScope.email=$localStorage.currentUser.user.email;
-        $rootScope.logged=true;
-        console.log($localStorage.currentUser.user.email);
-    }
 
-    // redirect to login page if not logged in and trying to access a restricted page
-    $rootScope.$on('$locationChangeStart', function (event, next, current) {
-        var publicPages = ['/login','/','/buscar','/signin'];
-        var restrictedPage = publicPages.indexOf($location.path()) === -1;
-        if (restrictedPage && !$localStorage.currentUser) {
-            $location.path('/');
-        }
-    });
+
+app.controller("offerController",function($scope,$http,$routeParams){
+    
+    function getOffer = function(){
+        var url = getUrl() + '/api/offers';
+    };
+    
+    
+    
 });
+
+
+
+
+
+
+
 
 app.controller("publicEnterpriseController",function($scope,$http,$routeParams){
-    var url = 'http://localhost:3000/api/enterprises/'+$routeParams.id;
+
+    var url = getUrl() + '/api/enterprises/'+$routeParams.id;
     console.log(url);
     $http({
         method:'GET',
@@ -72,48 +78,127 @@ app.controller("publicEnterpriseController",function($scope,$http,$routeParams){
 
 });
 
-app.controller('enterpriseController',function($http,$localStorage,$scope,$routeParams){
-    var url = 'http://localhost:3000/api/enterprises/'+$routeParams.id;
-    console.log(url);
-    $http({
-        method: 'GET',
-        url: url
-    }).then(
-        function success(response){
-            console.log(response);
-            $scope.enterprise = response.data.enterprise;
-            $scope.admins = $scope.enterprise.admins;
-        },
-        function error(response){
-            console.log(response);
-        }
-    );
 
-    var url = 'http://localhost:3000/api/applications/enterprise/'+$routeParams.id;
-    $http({
-        method:'GET',
-        url: url
-    }).then(
-        function success(response){
-            $scope.applications = response.data.applications;
-        },
-        function error(response){
-            console.log("No hay applications");
-        }
-    );
 
-    var url = 'http://localhost:3000/api/offers/enterprise/'+$routeParams.id;
-    $http({
-        method:'GET',
-        url: url
-    }).then(
-        function success(response){
-            $scope.offers = response.data.offers;
-        },
-        function error(response){
-            console.log("No hay applications");
-        }
-    );
+
+
+
+
+
+app.controller('enterpriseController',function($http,$localStorage,$scope,$routeParams,$window){
+
+    $scope.getEnterprise = function(){
+        //GET ENTERPRISE INFO
+        var url = getUrl() + '/api/enterprises/'+$routeParams.id;
+        console.log(url);
+        $http({
+            method: 'GET',
+            url: url
+        }).then(
+            function success(response){
+                console.log(response);
+                $scope.enterprise = response.data.enterprise;
+                $scope.admins = $scope.enterprise.admins;
+            },
+            function error(response){
+                console.log(response);
+            }
+        );
+    };
+
+
+    //GET APPLICATIONS
+    $scope.getApplications = function(){
+        var url = getUrl() + '/api/applications/enterprise/' +$routeParams.id;
+        $http({
+            method:'GET',
+            url: url
+        }).then(
+            function success(response){
+                $scope.applications = response.data.applications;
+            },
+            function error(response){
+                console.log("No hay applications");
+            }
+        );
+    };
+
+
+
+    //GET OFFERS
+    $scope.getOffers = function(){
+        var url = getUrl() + '/api/offers/enterprise/'+$routeParams.id;
+        $http({
+            method:'GET',
+            url: url
+        }).then(
+            function success(response){
+                $scope.offers = response.data.offers;
+            },
+            function error(response){
+                console.log("No hay applications");
+            }
+        );
+    }
+
+    //POST OFFER
+    $scope.addOffer = function(){
+        var url = getUrl() + '/api/offers';
+        $http({
+            method: 'POST',
+            url: url,
+            data: {
+                enterprise: $scope.enterprise,
+                position: $scope.newOffer.position,
+                description: $scope.newOffer.description,
+                salary: $scope.newOffer.salary,
+                travel: $scope.newOffer.travel
+            }
+        }).then(
+            function success(response){
+                alert('Oferta registrada');
+                $scope.getOffers();
+            },
+            function error(response){
+                alert('Ocurrio un error registrando la oferta, intentelo más tarde');
+                console.log(response);
+            }
+        );
+    };
+
+
+    //POST ADMIN
+    $scope.addAdmin = function(){
+        console.log('ADD ADMIN');
+        var url = getUrl() + '/api/enterprises/'+ $routeParams.id + '/addAdmin';
+        console.log($scope.newAdmin.email);
+        console.log(url);
+
+        $http({
+            method: 'POST',
+            url: url,
+            headers: {
+                token: $localStorage.currentUser.token
+            },
+            data: {
+                email: $scope.newAdmin.email
+            }
+        }).then(
+            function success(response){
+                alert('Administrador añadido correctamente');
+                console.log('aaa');
+                console.log(response);
+                $scope.getEnterprise();
+            },
+            function error(response){
+                alert('No se pudo añadir al administrador');
+            }
+        );
+    };
+
+    $scope.getEnterprise();
+    $scope.getApplications();
+    $scope.getOffers();
 
     //Get offers by enterprise id
     //Get Applications by enterprise id
@@ -121,8 +206,13 @@ app.controller('enterpriseController',function($http,$localStorage,$scope,$route
 
 });
 
+
+
+
+
+
 app.controller('accountController',function($scope,$localStorage,$http){
-    var url = 'http://localhost:3000/api/users/'+$localStorage.currentUser.user._id;
+    var url = getUrl() + '/api/users/'+$localStorage.currentUser.user._id;
     $http({
         method: 'GET',
         url: url,
@@ -137,7 +227,7 @@ app.controller('accountController',function($scope,$localStorage,$http){
     );
 
     $scope.enterprises = []; angular.forEach($localStorage.currentUser.user.managed_enterprises, function(value, key){
-        url = 'http://localhost:3000/api/enterprises/'+value;
+        url = getUrl() + '/api/enterprises/'+value;
         $http({
             method: 'GET',
             url: url,
@@ -161,7 +251,7 @@ app.controller('accountController',function($scope,$localStorage,$http){
         var file = $("#imagen").prop('files')[0];
         formData.append('file',file);
 
-        var url = 'http://localhost:3000/api/users/upload/images/';
+        var url = getUrl() + '/api/users/upload/images/';
         var data = formData;
         console.log(data);
         $http({
@@ -216,7 +306,7 @@ app.controller('enterprisesController', function($scope,
     $scope.split_enterprises=[];
     $http({
         method:'GET',
-        url:'http://localhost:3000/api/enterprises'
+        url: getUrl() + '/api/enterprises'
     }).then(
         function success(response){
             $scope.enterprises = response.data.enterprises;
@@ -234,5 +324,31 @@ app.controller('enterprisesController', function($scope,
 app.controller('searchController',function($scope,$http){
     $http.get('api/offers').then(function(response){
         $scope.offers = response.data.offers;
+    });
+});
+
+function getUrl(){
+    var url = window.location.href;
+    var arr = url.split("/");
+    var result = arr[0] + "//" + arr[2];
+    return result;
+}
+
+angular.module('myApp').run(function($rootScope, $http, $location, $localStorage, $templateCache){
+    // keep user logged in after page refresh
+    if ($localStorage.currentUser) {
+        $http.defaults.headers.common.Authorization = 'Bearer ' + $localStorage.currentUser.token;
+        $rootScope.email=$localStorage.currentUser.user.email;
+        $rootScope.logged=true;
+        console.log($localStorage.currentUser.user.email);
+    }
+
+    // redirect to login page if not logged in and trying to access a restricted page
+    $rootScope.$on('$locationChangeStart', function (event, next, current) {
+        var publicPages = ['/login','/','/buscar','/signin'];
+        var restrictedPage = publicPages.indexOf($location.path()) === -1;
+        if (restrictedPage && !$localStorage.currentUser) {
+            $location.path('/');
+        }
     });
 });
