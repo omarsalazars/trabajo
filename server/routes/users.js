@@ -3,7 +3,6 @@ const router = express.Router();
 const jwt = require('jsonwebtoken');
 var multer = require('multer');
 
-
 const { verifyToken} = require('../middlewares/authentication');
 const { sendVerificationMail} = require('../helpers/mailing')
 
@@ -53,7 +52,7 @@ router.get('/:id', (req,res)=>{
     })
 })
 
-router.post('/', async function(req, res){
+router.post('/', function(req, res){
     let body = req.body;
 
     let user = new User({
@@ -65,7 +64,7 @@ router.post('/', async function(req, res){
         phone : body.phone
     });
 
-    await user.save((err, userDB)=>{
+    user.save((err, userDB)=>{
 
         if(err){
             return res.status(400).json({
@@ -83,7 +82,7 @@ router.post('/', async function(req, res){
 
 });
 
-router.delete('/user/:id', async function(req, res){
+router.delete('/:id', async function(req, res){
 
     let id = req.params.id;
 
@@ -240,6 +239,33 @@ router.post('/upload/:folder', [verifyToken, multer({dest: 'public/uploads/image
         res.json({
             ok:true, 
             message:'File uploaded!'
+        });
+    });
+});
+
+
+router.put('/:id', function(req, res){
+    let id = req.params.id;
+    let body = req.body;
+    User.findByIdAndUpdate(id, {
+            $set:{
+                first_name:body.first_name,
+                last_name:body.last_name,
+                country:body.country,
+                phone:body.phone
+            }
+        },{new:true,runValidators:true} ,(err, userDB)=>{
+
+        if(err){
+            return res.status(400).json({
+                ok:false,
+                err
+            })
+        }
+
+        res.json({
+            ok:true,
+            user: userDB
         });
     });
 });

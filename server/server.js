@@ -15,6 +15,7 @@ var users = require('./routes/users');
 var enterprises = require('./routes/enterprises');
 var tests = require('./routes/tests');
 var applications = require('./routes/applications');
+var files = require('./routes/files');
 
 app.use(bodyParser.urlencoded({ limit: '50mb', extended: true, parameterLimit: 50000 }));
 app.use(bodyParser.json({ limit: '50mb' }));
@@ -28,6 +29,8 @@ app.use('/api/users', users);
 app.use('/api/enterprises', enterprises);
 app.use('/tests', tests);
 app.use('/api/applications', applications);
+app.use('/api/files', files);
+
 app.use(express.static(path.join(__dirname,'public')));
 
 mongoose.connect(process.env.URLDB,{
