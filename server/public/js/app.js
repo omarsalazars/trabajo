@@ -25,6 +25,14 @@ app.config(function($routeProvider){
         .when("/empresa/:id",{
         templateUrl: '../enterprise.html',
         controller: 'enterpriseController'
+    })
+        .when("/enterprise/:id",{
+        templateUrl: '../publicEnterprise.html',
+        controller:"publicEnterpriseController"
+    })
+        .when("/usuario/:id",{
+        templateUrl: '../user.html',
+        controller:'userController'
     });
 });
 
@@ -47,6 +55,23 @@ angular.module('myApp').run(function($rootScope, $http, $location, $localStorage
     });
 });
 
+app.controller("publicEnterpriseController",function($scope,$http,$routeParams){
+    var url = 'http://localhost:3000/api/enterprises/'+$routeParams.id;
+    console.log(url);
+    $http({
+        method:'GET',
+        url: url
+    }).then(
+        function success(response){
+            $scope.enterprise=response.data.enterprise;
+        },
+        function error(response){
+            alert("No tenemos información de esa empresa")
+        }
+    );
+
+});
+
 app.controller('enterpriseController',function($http,$localStorage,$scope,$routeParams){
     var url = 'http://localhost:3000/api/enterprises/'+$routeParams.id;
     console.log(url);
@@ -63,11 +88,11 @@ app.controller('enterpriseController',function($http,$localStorage,$scope,$route
             console.log(response);
         }
     );
-    
+
     //Get offers by enterprise id
     //Get Applications by enterprise id
     //createOffer
-    
+
 });
 
 app.controller('accountController',function($scope,$localStorage,$http){
@@ -160,45 +185,24 @@ app.controller('loginController',function($scope, $location, AuthenticationServi
     }
 });
 
-app.controller('enterprisesController', function($scope){
-    $scope.split_enterprises=[
-        [
-            {
-                image:'img/glazzol.png',
-                name:'Glazzol',
-                description: 'Esta empresa está bien chidori la neta brou',
-                website: 'glazzol.com',
-                phone:'4492773290',
-                email: 'hola@glazzol.com'
-            },
-            {
-                image:'img/glazzol.png',
-                name:'Glazzol',
-                description: 'Esta empresa está bien chidori la neta brou',
-                website: 'glazzol.com',
-                phone:'4492773290',
-                email: 'hola@glazzol.com'
+app.controller('enterprisesController', function($scope,
+                                                  $http){
+    $scope.split_enterprises=[];
+    $http({
+        method:'GET',
+        url:'http://localhost:3000/api/enterprises'
+    }).then(
+        function success(response){
+            $scope.enterprises = response.data.enterprises;
+            for(var i=0;i<$scope.enterprises.length;i+=2){
+                $scope.split_enterprises.push($scope.enterprises.slice(i,i+2));
             }
-        ],
-        [
-            {
-                image:'img/glazzol.png',
-                name:'Glazzol',
-                description: 'Esta empresa está bien chidori la neta brou',
-                website: 'glazzol.com',
-                phone:'4492773290',
-                email: 'hola@glazzol.com'
-            },
-            {
-                image:'img/glazzol.png',
-                name:'Glazzol',
-                description: 'Esta empresa está bien chidori la neta brou',
-                website: 'glazzol.com',
-                phone:'4492773290',
-                email: 'hola@glazzol.com'
-            }
-        ]
-    ];
+            console.log($scope.split_enterprises);
+        },
+        function error(response){
+            alert("No hay empresas registradas :(");
+        }
+    );
 });
 
 app.controller('searchController',function($scope,$http){

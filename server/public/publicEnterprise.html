@@ -1,0 +1,50 @@
+<div class="container">
+    <div class="text-center">
+        <h1>{{enterprise.name}}</h1>
+    </div>
+    <div class="row">
+        <div class="col-md-6 offset-md-3 col-xs-12" id="img">
+            <img class="img-fluid" src="uploads/enterprises/{{enterprise._id}}.jpg">
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6 col-xs-12">
+            <h3>Sitio web: <a href="{{enterprise.website}}">{{enterprise.website}}</a></h3>
+        </div>
+        <div class="col-md-6 col-xs-12">
+            <h3>
+                Email: <a href="mailto:{{enterprise.email}}">{{enterprise.email}}</a>
+            </h3>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            {{enterprise.description}}
+        </div>
+    </div>
+    <h3>Vacantes disponibles</h3>
+    <div class="row">
+        <table class="table">
+            <thead class="thead-light">
+                <tr>
+                    <th scope="col">Puesto</th>
+                    <th scope="col">Descripción<th>
+                    <th scope="col">Ciudad</th>
+                    <th scope="col"></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="offer in enterprise.offers">
+                    <td scope="row">{{offer.position}}</td>
+                    <td>{{offer.description}}</td>
+                    <td>{{offer.country}}</td>
+                    <td>
+                        <button type="button" class="btn btn-info">
+                            Me interesa
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

@@ -7,7 +7,9 @@
                     <img class="img-thumbnail img-fluid mt-5" ng-src="{{enterprise.image}}">
                 </div>
                 <div class="col-md-6 text-center">
-                    <h1 class="display-6">{{enterprise.name}}</h1>
+                    <a href="#!enterprise/{{enterprise._id}}">
+                        <h1 class="display-6">{{enterprise.name}}</h1>
+                    </a>
                     <p class="font-weight-bold">Descripción:</p>
                     <p>{{enterprise.description}}</p>
                     <div class="row">
