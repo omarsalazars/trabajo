@@ -138,7 +138,7 @@ router.post('/:id/addAdmin', verifyToken, async (req,res)=>{
             if(enterpriseDB===null){
                 return res.json({
                     err:{
-                        message: 'No existe un usuario con ese correo'
+                        message: 'No existe esa empresa'
                     }
                 })
             }
@@ -151,8 +151,5 @@ router.post('/:id/addAdmin', verifyToken, async (req,res)=>{
     
     
 })
-
-
-
 
 module.exports = router;
