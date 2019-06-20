@@ -120,13 +120,8 @@ app.controller("publicEnterpriseController",function($scope,$http,$routeParams){
 
 
 app.controller('enterpriseController',function($http,$localStorage,$scope,$routeParams,$window){
-    //si el usuario no es administrador lo sacas
 
-    if($localStorage.currentUser.user.managed_enterprises.indexOf($routeParams.id) == -1){
-        alert('No tienes permisos para acceder a esta página');
-        $window.location.href="/";
-    }
-
+    
     //GET ENTERPRISE INFO
     $scope.getEnterprise = function(){
         var url = getUrl() + '/api/enterprises/'+$routeParams.id;
@@ -147,65 +142,24 @@ app.controller('enterpriseController',function($http,$localStorage,$scope,$route
     };
 
     //PUT ENTERPRISE
-    $scope.updateEnterpriseInfo = function(){
+    $scope.updateEnterprise = function(){
         var url = getUrl() + '/api/enterprises/' +$routeParams.id;
-
         $http({
             method: 'PUT',
             url: url,
             data: {
-                name: $scope.enterprise.name,
-                email: $scope.enterprise.email,
-                website: $scope.enterprise.website,
-                phone: $scope.enterprise.phone
+                
             }
         }).then(
             function success(response){
-                alert('Información actualizada correctamente');
+                
             },
             function error(response){
-                alert('Hubo un error actualizando la información');
-                console.log(response);
+                
             }
         );
     };
-
     
-    //FALTA
-    $scope.updateEnterpriseImage = function(){
-        var url = getUrl() + '/api/enterprise/'
-        var formData = new FormData();
-        var file = $("#imagen").prop('files')[0];
-        formData.append('file',file);
-
-        var url = getUrl() + '/api/enterprises/upload/images/';
-        var data = formData;
-        console.log(data);
-        $http({
-            url: url,
-            method: 'POST',
-            headers: {
-                token: $localStorage.currentUser.token,
-                'Content-Type' : undefined
-            },
-            data: data
-        }).then(
-            function success(response){
-                console.log(response);
-                var image = document.querySelector('#profile').src;
-                document.querySelector('#profile').src='';
-                document.querySelector('#profile').src=image;
-            },
-            function error(response){
-                console.log(response);
-            }
-        );
-    }
-
-    $scope.updateEnterprise = function(){
-        $scope.updateEnterpriseInfo();
-        $scope.updateEnterpriseImage();
-    }
 
     //GET APPLICATIONS
     $scope.getApplications = function(){
@@ -330,65 +284,40 @@ app.controller('enterpriseController',function($http,$localStorage,$scope,$route
 
 
 app.controller('accountController',function($scope,$localStorage,$http){
+    var url = getUrl() + '/api/users/'+$localStorage.currentUser.user._id;
+    $http({
+        method: 'GET',
+        url: url,
+    }).then(
+        function success(response){
+            console.log(response);
+            $scope.user = response.data.user;
+        },
+        function error(response){
+            console.log(response);
+        }
+    );
 
-    $scope.getUser = function(){
-        var url = getUrl() + '/api/users/'+$localStorage.currentUser.user._id;
+    $scope.enterprises = []; angular.forEach($localStorage.currentUser.user.managed_enterprises, function(value, key){
+        url = getUrl() + '/api/enterprises/'+value;
         $http({
             method: 'GET',
             url: url,
         }).then(
             function success(response){
                 console.log(response);
-                $scope.user = response.data.user;
+                $scope.enterprises.push(response.data.enterprise);
             },
             function error(response){
                 console.log(response);
             }
         );
-    };
+    });
 
-    $scope.getManagedEnterprises = function(){
-        $scope.enterprises = []; 
-        angular.forEach($localStorage.currentUser.user.managed_enterprises, function(value, key){
-            url = getUrl() + '/api/enterprises/'+value;
-            $http({
-                method: 'GET',
-                url: url,
-            }).then(
-                function success(response){
-                    console.log(response);
-                    $scope.enterprises.push(response.data.enterprise);
-                },
-                function error(response){
-                    console.log(response);
-                }
-            );
-        });
-    }
+    $scope.update = function(){
 
-    $scope.updateUserInfo = function(){
-        var url = getUrl() + '/api/users/' + $localStorage.currentUser.user._id;
-        $http({
-            method: 'PUT',
-            url: url,
-            data: {
-                first_name: $scope.user.first_name,
-                last_name: $scope.user.last_name,
-                country: $scope.user.country,
-                phone: $scope.user.phone
-            }
-        }).then(
-            function success(response){
-                alert('Información Actualizada correctamente');
-            },
-            function error(response){
-                alert('Ocurrio un error actualizando la información, vuelve a intentarlo más tarte');
-            }
-        );
-    }
+        //falta actualizar usuario por PUT
 
-    $scope.updateUserImage = function(){
-        var url = getUrl() + '/api/users/'
         var form = document.querySelector("#form");
         var formData = new FormData();
         var file = $("#imagen").prop('files')[0];
@@ -417,14 +346,6 @@ app.controller('accountController',function($scope,$localStorage,$http){
             }
         );
     }
-
-    $scope.updateUser = function(){
-        $scope.updateUserImage();
-        $scope.updateUserInfo();
-    }
-
-    $scope.getUser();
-    $scope.getManagedEnterprises();
 });
 
 app.controller('indexController',function($scope){
