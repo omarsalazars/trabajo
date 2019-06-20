@@ -203,7 +203,7 @@ router.post('/login', (req, res)=>{
     })
 })
 
-router.post('/upload/:folder', [verifyToken, multer({dest: 'public/uploads/images'}).single('file') ], (req, res)=>{
+router.post('/upload/:folder', [verifyToken, multer({dest: 'uploads/images'}).single('file') ], (req, res)=>{
 
     console.log(__dirname);
 
@@ -222,7 +222,7 @@ router.post('/upload/:folder', [verifyToken, multer({dest: 'public/uploads/image
     let ext = file.name.split('.');
     ext = ext[ext.length-1];  
 
-    let validImageExtensions = ['png', 'jpg'];
+    let validImageExtensions = ['png', 'jpg', 'jpeg', 'PNG'];
 
     if(folder=='images' && !validImageExtensions.includes(ext)){
         return res.status(400).json({
@@ -246,7 +246,7 @@ router.post('/upload/:folder', [verifyToken, multer({dest: 'public/uploads/image
     let fileName = `${req.user._id}.${ext}`;
     // Use the mv() method to place the file somewhere on your server
 
-    file.mv(`${__dirname}/../../server/public/uploads/users/${folder}/${fileName}`, (err)=>{
+    file.mv(`${__dirname}/../../server/uploads/users/${folder}/${fileName}`, (err)=>{
         if (err)
             return res.status(500).json({
                 ok:false,

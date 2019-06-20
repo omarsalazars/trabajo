@@ -20,6 +20,7 @@ function HttpService($http,$localStorage){
     httpService.addOffer = addOffer;
     httpService.updateOfferInfo = updateOfferInfo;
     httpService.updateOfferFile = updateOfferFile;
+    httpService.deleteOffer = '';
 
     //Users
     httpService.getUsers = getUsers;
@@ -27,6 +28,7 @@ function HttpService($http,$localStorage){
     httpService.addUser = addUser;
     httpService.updateUserInfo = updateUserInfo;
     httpService.updateUserImage = updateUserImage;
+    httpService.deleteUser = '';
 
     //Enterprises
     httpService.getEnterprises = getEnterprises;
@@ -36,6 +38,7 @@ function HttpService($http,$localStorage){
     httpService.updateEnterpriseImage = updateEnterpriseImage;
     httpService.addEnterpriseAdmin = addEnterpriseAdmin;
     httpService.deleteEnterpriseAdmin = deleteEnterpriseAdmin;
+    httpService.deleteEnterprise = '';
 
     //Applications
     httpService.getApplications = getApplications;
@@ -43,6 +46,7 @@ function HttpService($http,$localStorage){
     httpService.getApplicationsByEnterpriseId = getApplicationsByEnterpriseId;
     httpService.addApplication = addApplication;
     httpService.proceedApplication = proceedApplication;
+    httpService.deleteApplication = '';
 
     return httpService;
 
@@ -88,6 +92,7 @@ function HttpService($http,$localStorage){
         }).then(
             function success(response){
                 httpService.offers = response.data.offers;
+                console.log(httpService.offers);
                 callback(true);
             },
             function error(response){
@@ -247,6 +252,7 @@ function HttpService($http,$localStorage){
                 callback(true);
             },
             function error(response){
+                console.log(response);
                 callback(false);
             }
         );
@@ -451,8 +457,15 @@ function HttpService($http,$localStorage){
             }
         }).then(
             function success(response){
-                alert('Se está procesando tu solicitud, te notificaremos cuando la empresa conteste tu solicitud.')
-                callback(true);
+                if(response.data.err){
+                    alert(response.data.err.message);
+                }
+                else{
+                    alert('Se está procesando tu solicitud, te notificaremos cuando la empresa conteste tu solicitud.');
+                    console.log(response);
+                    httpService.application = response.data.application;
+                    callback(true);
+                }
             },
             function error(response){
                 alert('Ocurrio un error inesperado');
@@ -469,6 +482,7 @@ function HttpService($http,$localStorage){
         }).then(
             function success(response){
                 console.log(response.data);
+                httpService.application = response.data.application;
                 callback(true);
             },
             function error(response){

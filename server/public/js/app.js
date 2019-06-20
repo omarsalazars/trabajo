@@ -70,7 +70,7 @@ app.controller("offerController",function($scope,$routeParams,HttpService){
 
 });
 
-app.controller("publicEnterpriseController",function($scope,$routeParams,HttpService){
+app.controller("publicEnterpriseController",function($scope,$routeParams, $window, $localStorage, HttpService){
 
     $scope.getEnterprise = function(){
         HttpService.getEnterpriseById(
@@ -80,8 +80,29 @@ app.controller("publicEnterpriseController",function($scope,$routeParams,HttpSer
             }
         );
     }
+    
+    $scope.getOffers = function(){
+        HttpService.getOffersByEnterpriseId(
+            $routeParams.id,
+            function(result){
+                $scope.offers = HttpService.offers;
+            }
+        );
+    }
+    
+    $scope.proceedApplication = function(offer){
+        HttpService.addApplication(
+            $localStorage.currentUser.user,
+            offer,
+            $localStorage.currentUser.token,
+            function(result){
+                $window.location.href="/aplicacion/"+HttpService.application._id;
+            }
+        );
+    }
 
     $scope.getEnterprise();
+    $scope.getOffers();
 });
 
 app.controller('enterpriseController',function($localStorage,$scope,$routeParams,$window,HttpService){
@@ -219,6 +240,7 @@ app.controller('accountController',function($scope,$localStorage,HttpService){
                 var image = document.querySelector('#profile').src;
                 document.querySelector('#profile').src='';
                 document.querySelector('#profile').src=image;
+                console.log("cambio la imagen");
             }
         );
     };

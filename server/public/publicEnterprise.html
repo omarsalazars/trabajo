@@ -34,12 +34,12 @@
                 </tr>
             </thead>
             <tbody>
-                <tr ng-repeat="offer in enterprise.offers">
+                <tr ng-repeat="offer in offers">
                     <td scope="row">{{offer.position}}</td>
                     <td>{{offer.description}}</td>
                     <td>{{offer.country}}</td>
                     <td>
-                        <button type="button" class="btn btn-info">
+                        <button type="button" ng-click="proceedApplication(offer)" class="btn btn-info">
                             Me interesa
                         </button>
                     </td>
