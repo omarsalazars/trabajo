@@ -11,21 +11,22 @@ async function sendVerificationMail(email){
         port: 587,
         secure: false, // true for 465, false for other ports
         auth: {
-            user: 'carlos.eao@hotmail.com', // generated ethereal user
-            pass: 'Electropollosaurio1' // generated ethereal password
+            user: 'bolsadetrabajoisc2019', // generated ethereal user
+            pass: 'omarcarlos123' // generated ethereal password
         }
     });
 
     let token = jwt.sign({
         email
-    }, process.env.SEED, {expiresIn:180});
+    }, process.env.SEED, {expiresIn:500});
 
     // send mail with defined transport object
     let info = await transporter.sendMail({
     from: 'Pruebas', // sender address
     to: email, // list of receivers
-    subject: `Hello, verificate en esta liga localhost:3000/verify?token=${token}`, // Subject line
+    subject: `Hola, verificate en esta liga`, // Subject line
     text: "Hello world?", // plain text body
+    html: `localhost:3000/verify?token=${token}` // html body
     });
 
     console.log("Message sent: %s", info.messageId);
