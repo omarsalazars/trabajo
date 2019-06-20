@@ -1,10 +1,13 @@
 const express = require('express');
 const router = express.Router();
+var multer = require('multer');
 
 const { verifyToken} = require('../middlewares/authentication')
 
 let Enterprise = require('../models/enterprise');
 let User = require('../models/user');
+let Offer = require('../models/offer');
+let Application = require('../models/application');
 
 router.get('/',(req,res)=>{
     Enterprise.find({})
@@ -23,8 +26,96 @@ router.get('/',(req,res)=>{
     })
 })
 
+//BAJA FÍSICA A EMPRESA
 
-/// OBTENER UNA EMPRESA ADMIN A EMPRESA
+router.delete('/:id', (req, res)=>{
+    let id = req.params.id;
+
+    Enterprise.findByIdAndDelete(id)
+    .exec((err, enterpriseDB)=>{
+        if(err){
+            return res.status(500).json({
+                ok:false,
+                err
+            })
+        }
+        if(!enterpriseDB){
+            return res.status(400).json({
+                ok:false,
+                err:{
+                    message:'No se borró nada'
+                }
+            })
+        }
+
+        //Borrar todas las ofertas de esa empresa
+        Offer.deleteMany({enterprise:id})
+        .exec((err, offersDB)=>{
+            if(err){
+                return res.status(500).json({
+                    ok:false,
+                    err
+                })
+            }
+            if(!offersDB){
+                return res.status(400).json({
+                    ok:false,
+                    err:{
+                        message:'No se borraron ofertas'
+                    }
+                })
+            }
+
+            //BORRAR LAS APLICACIONES A LAS OFERTAS QUE ESTAMOS BORRANDO
+
+            let removedOffers = [];
+            for(var i=0; i<offersDB.length; i++){
+                removedOffers.push(offersDB[i]._id);
+            }
+
+            Application.deleteMany({offer: {$in:removedOffers}})
+            .exec((err, applicationsDB)=>{
+                if(err){
+                    return res.status(500).json({
+                        ok:false,
+                        err
+                    })
+                }
+                if(!applicationsDB){
+                    return res.status(400).json({
+                        ok:false,
+                        err:{
+                            message:'No se borraron aplicaciones'
+                        }
+                    })
+                }
+
+                //BORRAR LA EMPRESA DE SUS ADMINS
+                User.updateMany({managed_enterprises:id}, {$pull:{managed_enterprises:id}})
+                .exec((err, userDB)=>{
+                    if(err){
+                        return res.status(500).json({
+                            ok:false,
+                            err
+                        })
+                    }
+                    if(!userDB){
+                        return res.status(400).json({
+                            ok:false,
+                            err:{
+                                message:'No se borró nada'
+                            }
+                        })
+                    }
+                })
+            })
+        })
+        res.json({
+            enterpriseDB
+        })
+    })
+})
+
 
 /// CUANDO LAS COSAS VIENEN TIPO pagina/api/cosa/parametro se jala por req.paras.parametro
 /// PARA CUANDO ES /cosa?parametro=parametro es req.query.parametro
@@ -116,7 +207,7 @@ router.post('/:id/addAdmin', verifyToken, async (req,res)=>{
 
     let newAdminEmail = req.body.email;
 
-    User.findOneAndUpdate({email:newAdminEmail}, {$addToSet:{managed_enterprises:enterpriseId} }, {new:true},(err, userDB)=>{
+    User.findOneAndUpdate({email:newAdminEmail, active:true}, {$addToSet:{managed_enterprises:enterpriseId} }, {new:true},(err, userDB)=>{
         if(err){
             return res.json({
                 err
@@ -173,6 +264,54 @@ router.put('/:id', function(req, res){
         res.json({
             ok:true,
             enterprise: enterpriseDB
+        });
+    });
+});
+
+///SUBIR IMAGEN DE empresa
+router.put('/:id/upload/image', multer({dest: 'uploads/enterprises/images'}).single('file') , (req, res)=>{
+
+    if (Object.keys(req.files).length == 0) {
+        return res.status(400)
+            .json({
+            ok:false, 
+            err:{
+                message:'No files were uploaded.'
+            }
+        });
+    }
+
+    let file = req.files.file;
+    let ext = file.name.split('.');
+    ext = ext[ext.length-1];  
+
+    let validImageExtensions = ['png', 'jpg', 'jpeg', 'PNG'];
+
+    if(!validImageExtensions.includes(ext)){
+        return res.status(400).json({
+            ok:false,
+            err:{
+                message:'La extensión de la imagen no es valida hdp'
+            }
+        })
+    }
+    ///CAMBIAR NOMBRE AL ARCHIVO
+
+    let fileName = `${req.params.id}.jpg`;
+    // Use the mv() method to place the file somewhere on your server
+
+    file.mv(`${__dirname}/../../server/uploads/enterprises/images/${fileName}`, (err)=>{
+        if (err)
+            return res.status(500).json({
+                ok:false,
+                err
+            })
+
+        //AQUI archivo CARGADo
+
+        res.json({
+            ok:true, 
+            message:'File uploaded!'
         });
     });
 });

@@ -10,9 +10,12 @@ const { sendVerificationMail} = require('../helpers/mailing')
 const bcrypt = require('bcrypt');
 
 let User = require('../models/user');
+let Application = require('../models/application');
+let Enterprise = require('../models/enterprise');
+
 
 router.get('/',(req,res)=>{
-    User.find({})
+    User.find({active:true})
         .exec((err, users)=>{
         if(err){
             return res.status(500).json({
@@ -82,18 +85,17 @@ router.post('/', function(req, res){
 
 });
 
-router.delete('/:id', async function(req, res){
+// BAJA LOGICA A USUARIO POR ID
+router.delete('/:id', function(req, res){
 
     let id = req.params.id;
 
-    /*let changeStatus={
-        status:false
-    };
+    //SE QUITAN TODAS LAS EMPRESAS DE LAS EMPRESAS QUE EL WEY YA ADMINISTRABA
 
-    User.findByIdAndUpdate(id, changeStatus,{new:true},(err, removedUser)=>{
+    User.findByIdAndUpdate(id, {active:false, managed_enterprises:[]},{new:true},(err, removedUser)=>{
 
         if(err){
-            return res.status(400).json({
+            return res.status(500).json({
                 ok:false,
                 err
             })
@@ -106,33 +108,50 @@ router.delete('/:id', async function(req, res){
                 }
             })
         }
+        ///BAJA FISICA A LAS APLICACIONES QUE HABIA HECHO ESE USUARIO
+        Application.deleteMany({user:id})
+        .exec((err, removedApplications)=>{
+            if(err){
+                return res.status(500).json({
+                    ok:false,
+                    err
+                })
+            }
+            if(!removedApplications){
+                return res.status(400).json({
+                    ok:false,
+                    err:{
+                        message:'No se borraron aplicaciones'
+                    }
+                })
+            }
+        })
+
+        //QUITAR AL USUARIO DE LAS EMPRESAS QUE ADMINISTRABA
+
+        Enterprise.updateMany({admins:id}, {$pull:{admins:id}})
+        .exec((err, enterpriseDB)=>{
+            if(err){
+                return res.status(500).json({
+                    ok:false,
+                    err
+                })
+            }
+            if(!enterpriseDB){
+                return res.status(400).json({
+                    ok:false,
+                    err:{
+                        message:'No se borró nada'
+                    }
+                })
+            }
+        })
+        
+        
         res.json({
             ok:true,
             user:removedUser
         });
-    });*/
-
-    //FISICA
-    await User.findByIdAndRemove(id, (err, removedUser)=>{
-        if(err){
-            return res.status(400).json({
-                ok:false,
-                err
-            })
-        }
-        if(!removedUser){
-            return res.status(400).json({
-                ok:false,
-                err:{
-                    message:'User not found'
-                }
-            })
-        }
-        res.json({
-            ok:true,
-            user:removedUser
-        })
-
     });
 });
 
@@ -146,7 +165,7 @@ router.post('/login', (req, res)=>{
                 err
             })
         }
-        if( !userDB ){
+        if( !userDB || !userDB.active ){
             return res.status(400).json({
                 ok:false,
                 err:{
@@ -184,9 +203,9 @@ router.post('/login', (req, res)=>{
     })
 })
 
-router.post('/upload/:folder', [verifyToken, multer({dest: 'uploads/images'}).single('file') ], (req, res)=>{
 
-    console.log(__dirname);
+///SUBIR IMAGEN DE USUARIO
+router.put('/upload/image', [verifyToken, multer({dest: 'uploads/users/images'}).single('file') ], (req, res)=>{
 
     if (Object.keys(req.files).length == 0) {
         return res.status(400)
@@ -199,13 +218,12 @@ router.post('/upload/:folder', [verifyToken, multer({dest: 'uploads/images'}).si
     }
 
     let file = req.files.file;
-    let folder = req.params.folder;
     let ext = file.name.split('.');
     ext = ext[ext.length-1];  
 
     let validImageExtensions = ['png', 'jpg', 'jpeg', 'PNG'];
 
-    if(folder=='images' && !validImageExtensions.includes(ext)){
+    if(!validImageExtensions.includes(ext)){
         return res.status(400).json({
             ok:false,
             err:{
@@ -213,11 +231,48 @@ router.post('/upload/:folder', [verifyToken, multer({dest: 'uploads/images'}).si
             }
         })
     }
-    if(folder=='curriculums' && ext != 'pdf'){
+    ///CAMBIAR NOMBRE AL ARCHIVO
+
+    let fileName = `${req.user._id}.jpg`;
+    // Use the mv() method to place the file somewhere on your server
+
+    file.mv(`${__dirname}/../../server/uploads/users/images/${fileName}`, (err)=>{
+        if (err)
+            return res.status(500).json({
+                ok:false,
+                err
+            })
+
+        //AQUI archivo CARGADo
+
+        res.json({
+            ok:true, 
+            message:'File uploaded!'
+        });
+    });
+});
+///SUBIR CURRICULUM DE USUARIO
+router.put('/upload/curriculum', [verifyToken, multer({dest: 'uploads/users/curriculums'}).single('file') ], (req, res)=>{
+
+    if (Object.keys(req.files).length == 0) {
+        return res.status(400)
+            .json({
+            ok:false, 
+            err:{
+                message:'No files were uploaded.'
+            }
+        });
+    }
+
+    let file = req.files.file;
+    let ext = file.name.split('.');
+    ext = ext[ext.length-1];  
+
+    if(ext != 'pdf'){
         return res.status(400).json({
             ok:false,
             err:{
-                message:'El curriculum solo tiene que ser pdf'
+                message:'El curriculum solo puede ser pdf'
             }
         })
     }
@@ -227,7 +282,7 @@ router.post('/upload/:folder', [verifyToken, multer({dest: 'uploads/images'}).si
     let fileName = `${req.user._id}.${ext}`;
     // Use the mv() method to place the file somewhere on your server
 
-    file.mv(`${__dirname}/../../server/uploads/users/${folder}/${fileName}`, (err)=>{
+    file.mv(`${__dirname}/../../server/uploads/users/curriculums/${fileName}`, (err)=>{
         if (err)
             return res.status(500).json({
                 ok:false,
@@ -243,6 +298,7 @@ router.post('/upload/:folder', [verifyToken, multer({dest: 'uploads/images'}).si
     });
 });
 
+//ACTUALIZAR USUARIO
 
 router.put('/:id', function(req, res){
     let id = req.params.id;
