@@ -152,7 +152,18 @@ function HttpService($http,$localStorage){
     //Inicio users
 
     function getUsers(callback){
-
+        $http({
+            method: 'GET',
+            url: getUrl() + '/api/users'
+        }).then(
+            function success(response){
+                httpService.users = response.data.users;
+                callback(true);
+            },
+            function error(response){
+                callback(false);
+            }
+        );
     }
 
     function getUserById(id,callback){
@@ -175,7 +186,27 @@ function HttpService($http,$localStorage){
     }
 
     function addUser(user,callback){
-
+        $http({
+            method: 'POST',
+            url: getUrl + '/api/users',
+            data: {
+                first_name : user.first_name,
+                last_name : user.last_name,
+                email : user.email,
+                password: user.password,
+                country: user.country,
+                phone: user.phone
+            }
+        }).then(
+            function success(response){
+                alert('Usuario creado exitosamente, revise su correo electrónico para confirmar su cuenta');
+                callback(true);
+            },
+            function error(response){
+                alert('Error creando usuario');
+                callback(false);
+            }
+        );
     }
 
     function updateUserInfo(user,token,callback){
@@ -258,8 +289,30 @@ function HttpService($http,$localStorage){
         );
     }
 
-    function addEnterprise(enterprise, callback){
-
+    function addEnterprise(enterprise, userId, token, callback){
+        $http({
+            method:'POST',
+            url: getUrl() + '/api/enterprises',
+            headers: {
+                token: token
+            },
+            data: {
+                name: enterprise.name,
+                email: enterprise.email,
+                website: enterprise.website,
+                phone: enterprise.phone,
+                admins: userId
+            }
+        }).then(
+            function success(response){
+                alert('Empresa creada exitosamente');
+                callback(true);
+            },
+            function error(response){
+                alert('Fallo al crear la empresa');
+                callback(false);
+            }
+        );
     }
 
     function addEnterpriseAdmin(enterpriseId,email,token,callback){
@@ -339,11 +392,33 @@ function HttpService($http,$localStorage){
     //Inicio Applications
 
     function getApplications(callback){
-
+        $http({
+            method: 'GET',
+            url: getUrl() + '/api/applications'
+        }).then(
+            function success(response){
+                httpService.applications = response.data.applications;
+                callback(true);
+            },
+            function error(response){
+                callback(false);
+            }
+        );
     }
 
     function getApplicationById(id,callback){
-
+        $http({
+            method: 'GET',
+            url: getUrl() + '/api/applications/'+id
+        }).then(
+            function success(response){
+                httpService.application = response.data.application;
+                callback(true);
+            },
+            function error(response){
+                callback(false);
+            }
+        );
     }
 
     function getApplicationsByEnterpriseId(id,callback){
@@ -363,12 +438,43 @@ function HttpService($http,$localStorage){
         );
     }
 
-    function addApplication(user,offer,callback){
-
+    function addApplication(user,offer,token,callback){
+        $http({
+            method: 'POST',
+            url: getUrl() + '/api/applications',
+            headers: {
+                token: token
+            },
+            data: {
+                user: user._id,
+                offer: offer
+            }
+        }).then(
+            function success(response){
+                alert('Se está procesando tu solicitud, te notificaremos cuando la empresa conteste tu solicitud.')
+                callback(true);
+            },
+            function error(response){
+                alert('Ocurrio un error inesperado');
+                callback(false);
+            }
+        );
     }
 
-    function proceedApplication(callback){
-
+    function proceedApplication(offerId, callback){
+        console.log('Proceed application');
+        $http({
+            method: 'PUT',
+            url: getUrl() + '/api/offers/'+offerId+'/proceed'
+        }).then(
+            function success(response){
+                console.log(response.data);
+                callback(true);
+            },
+            function error(response){
+                callback(false);
+            }
+        );
     }
     //Fin applications
 }

@@ -134,6 +134,9 @@ app.controller('enterpriseController',function($localStorage,$scope,$routeParams
     //POST OFFER
     $scope.addOffer = function(){
         $scope.newOffer.enterprise = $scope.enterprise;
+        if(!$scope.newOffer.travel){
+            $scope.newOffer.travel = false;
+        }
         HttpService.addOffer(
             $scope.newOffer,
             function(result){
