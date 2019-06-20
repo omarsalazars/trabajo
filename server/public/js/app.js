@@ -37,233 +37,130 @@ app.config(function($routeProvider){
         .when("/offer/:id",{
         templateUrl: '../offer.html',
         controller: 'offerController'
+    })
+        .when("/oferta/:id",{
+        templateUrl: '../oferta.html',
+        controller: 'ofertaController'
     });
 });
 
+app.controller("ofertaController", function($scope,$routeParams, HttpService){
+    $scope.getOffer = function(){
 
+    }
 
+});
 
-
-
-
-
-
-
-app.controller("offerController",function($scope,$http,$routeParams){
+app.controller("offerController",function($scope,$routeParams,HttpService){
 
     $scope.getOffer = function(){
-        var url = getUrl() + '/api/offers/' + $routeParams.id;
-        console.log(url);
-        $http({
-            method: 'GET',
-            url: url
-        }).then(
-            function success(response){
-                $scope.offer = response.data.offer;
-            },
-            function error(response){
-                console.log("No existe la oferta");
+        HttpService.getOfferById(
+            $routeParams.id,
+            function(result){
+                $scope.offer = HttpService.offer;
             }
         );
     };
 
     $scope.updateOffer = function(){
-        var url = getUrl() + '/api/offers/' + $routeParams.id;
 
-        $http({
-            method: 'PUT',
-            url: url,
-            data: {
-                enterprise: $scope.offer.enterprise,
-                position: $scope.offer.position,
-                description: $scope.offer.description,
-                salary: $scope.offer.salary,
-                travel: $scope.offer.travel
-            }
-        }).then(
-            function success(response){
-                alert('Oferta actualizada correctamente')
-            },
-            function error(response){
-                alert('Error actualizando la oferta');
-            }
-        );
     }
 
     $scope.getOffer();
 
 });
 
-app.controller("publicEnterpriseController",function($scope,$http,$routeParams){
+app.controller("publicEnterpriseController",function($scope,$routeParams,HttpService){
 
-    var url = getUrl() + '/api/enterprises/'+$routeParams.id;
-    console.log(url);
-    $http({
-        method:'GET',
-        url: url
-    }).then(
-        function success(response){
-            $scope.enterprise=response.data.enterprise;
-        },
-        function error(response){
-            alert("No tenemos información de esa empresa")
-        }
-    );
+    $scope.getEnterprise = function(){
+        HttpService.getEnterpriseById(
+            $routeParams.id,
+            function(result){
+                $scope.enterprise = HttpService.enterprise;
+            }
+        );
+    }
 
+    $scope.getEnterprise();
 });
 
+app.controller('enterpriseController',function($localStorage,$scope,$routeParams,$window,HttpService){
 
 
-
-
-
-
-
-app.controller('enterpriseController',function($http,$localStorage,$scope,$routeParams,$window){
-
-    
     //GET ENTERPRISE INFO
     $scope.getEnterprise = function(){
-        var url = getUrl() + '/api/enterprises/'+$routeParams.id;
-        console.log(url);
-        $http({
-            method: 'GET',
-            url: url
-        }).then(
-            function success(response){
-                console.log(response);
-                $scope.enterprise = response.data.enterprise;
-                $scope.admins = $scope.enterprise.admins;
-            },
-            function error(response){
-                console.log(response);
+        HttpService.getEnterpriseById(
+            $routeParams.id,
+            function(result){
+                $scope.enterprise = HttpService.enterprise;
+                $scope.admins = HttpService.enterprise.admins;
             }
         );
     };
 
     //PUT ENTERPRISE
     $scope.updateEnterprise = function(){
-        var url = getUrl() + '/api/enterprises/' +$routeParams.id;
-        $http({
-            method: 'PUT',
-            url: url,
-            data: {
-                
-            }
-        }).then(
-            function success(response){
-                
-            },
-            function error(response){
-                
+        HttpService.updateEnterpriseInfo(
+            enterprise,
+            $localStorage.currentUser.token,
+            function(result){
+                alert('Se actualizó correctamente');
             }
         );
     };
-    
 
     //GET APPLICATIONS
     $scope.getApplications = function(){
-        var url = getUrl() + '/api/applications/enterprise/' +$routeParams.id;
-        $http({
-            method:'GET',
-            url: url
-        }).then(
-            function success(response){
-                $scope.applications = response.data.applications;
-            },
-            function error(response){
-                console.log("No hay applications");
+        HttpService.getApplicationsByEnterpriseId(
+            $routeParams.id,
+            function(result){
+                $scope.applications = HttpService.applications;
             }
         );
     };
 
 
 
-    //GET OFFERS
+    //GET OFFERS BY ENTERPRISE ID
     $scope.getOffers = function(){
-        var url = getUrl() + '/api/offers/enterprise/'+$routeParams.id;
-        $http({
-            method:'GET',
-            url: url
-        }).then(
-            function success(response){
-                $scope.offers = response.data.offers;
-            },
-            function error(response){
-                console.log("No hay applications");
+        HttpService.getOffersByEnterpriseId(
+            $routeParams.id,
+            function(result){
+                $scope.offers = HttpService.offers;
             }
         );
     }
 
     //POST OFFER
     $scope.addOffer = function(){
-        var url = getUrl() + '/api/offers';
-        $http({
-            method: 'POST',
-            url: url,
-            data: {
-                enterprise: $scope.enterprise,
-                position: $scope.newOffer.position,
-                description: $scope.newOffer.description,
-                salary: $scope.newOffer.salary,
-                travel: $scope.newOffer.travel
-            }
-        }).then(
-            function success(response){
-                alert('Oferta registrada');
+        $scope.newOffer.enterprise = $scope.enterprise;
+        HttpService.addOffer(
+            $scope.newOffer,
+            function(result){
                 $scope.getOffers();
-            },
-            function error(response){
-                alert('Ocurrio un error registrando la oferta, intentelo más tarde');
-                console.log(response);
             }
         );
     };
-
 
     //POST ADMIN
     $scope.addAdmin = function(){
-        var url = getUrl() + '/api/enterprises/'+ $routeParams.id + '/addAdmin';
-
-        $http({
-            method: 'POST',
-            url: url,
-            headers: {
-                token: $localStorage.currentUser.token
-            },
-            data: {
-                email: $scope.newAdmin.email
-            }
-        }).then(
-            function success(response){
-                alert('Administrador añadido correctamente');
+        HttpService.addEnterpriseAdmin(
+            $routeParams.id,
+            $scope.newAdmin.email,
+            $localStorage.currentUser.token,
+            function(result){
                 $scope.getEnterprise();
-            },
-            function error(response){
-                alert('No se pudo añadir al administrador');
             }
         );
     };
 
-    $scope.deleteAdmin = function(idAdmin){
-        var url = getUrl() + '/api/enterprises/'+ $routeParams.id + '/deleteAdmin/'+idAdmin;
-
-        $http({
-            method: 'DELETE',
-            url: url,
-            headers: {
-                token: $localStorage.currentUser.token
-            },
-            data: {
-                _id: idAdmin
-            }
-        }).then(
-            function success(response){
-                alert('Administrador borrado correctamente');
+    $scope.deleteAdmin = function(adminId){
+        HttpService.deleteEnterpriseAdmin(
+            $routeParams.id,
+            adminId,
+            $localStorage.currentUser.token,
+            function(result){
                 $scope.getEnterprise();
-            },
-            function error(response){
-                alert('No se pudo borrar al administrador');
             }
         );
     }
@@ -283,69 +180,64 @@ app.controller('enterpriseController',function($http,$localStorage,$scope,$route
 
 
 
-app.controller('accountController',function($scope,$localStorage,$http){
-    var url = getUrl() + '/api/users/'+$localStorage.currentUser.user._id;
-    $http({
-        method: 'GET',
-        url: url,
-    }).then(
-        function success(response){
-            console.log(response);
-            $scope.user = response.data.user;
-        },
-        function error(response){
-            console.log(response);
-        }
-    );
+app.controller('accountController',function($scope,$localStorage,HttpService){
 
-    $scope.enterprises = []; angular.forEach($localStorage.currentUser.user.managed_enterprises, function(value, key){
-        url = getUrl() + '/api/enterprises/'+value;
-        $http({
-            method: 'GET',
-            url: url,
-        }).then(
-            function success(response){
-                console.log(response);
-                $scope.enterprises.push(response.data.enterprise);
-            },
-            function error(response){
-                console.log(response);
+    $scope.enterprises = []; 
+
+    $scope.getUser = function(){
+        HttpService.getUserById(
+            $localStorage.currentUser.user._id,
+            function(result){
+                $scope.user = HttpService.user;
             }
         );
-    });
 
-    $scope.update = function(){
+    };
 
-        //falta actualizar usuario por PUT
+    $scope.getEnterprises = function(){
+        angular.forEach($localStorage.currentUser.user.managed_enterprises, function(value, key){
+            HttpService.getEnterpriseById(value,function(result){
+                $scope.enterprises.push(HttpService.enterprise);
+            });
+        });
 
-        var form = document.querySelector("#form");
+    };
+
+    $scope.updateUserImage = function(){
         var formData = new FormData();
         var file = $("#imagen").prop('files')[0];
         formData.append('file',file);
 
-        var url = getUrl() + '/api/users/upload/images/';
-        var data = formData;
-        console.log(data);
-        $http({
-            url: url,
-            method: 'POST',
-            headers: {
-                token: $localStorage.currentUser.token,
-                'Content-Type' : undefined
-            },
-            data: data
-        }).then(
-            function success(response){
-                console.log(response);
+        HttpService.updateUserImage(
+            $scope.user._id,
+            $localStorage.currentUser.token,
+            formData,
+            function(result){
                 var image = document.querySelector('#profile').src;
                 document.querySelector('#profile').src='';
                 document.querySelector('#profile').src=image;
-            },
-            function error(response){
-                console.log(response);
             }
         );
-    }
+    };
+    
+    $scope.updateUserInfo = function(){
+        HttpService.updateUserInfo(
+            $scope.user,
+            $localStorage.currentUser.token,
+            function(result){
+                
+            }
+        );
+    };
+    
+    $scope.update = function(){
+        $scope.updateUserInfo();
+        $scope.updateUserImage();
+        //falta actualizar usuario por PUT
+    };
+
+    $scope.getUser();
+    $scope.getEnterprises();
 });
 
 app.controller('indexController',function($scope){
@@ -373,30 +265,33 @@ app.controller('loginController',function($scope, $location, AuthenticationServi
     }
 });
 
-app.controller('enterprisesController', function($scope,
-                                                  $http){
+app.controller('enterprisesController', function($scope,HttpService){
+    
+    
     $scope.split_enterprises=[];
-    $http({
-        method:'GET',
-        url: getUrl() + '/api/enterprises'
-    }).then(
-        function success(response){
-            $scope.enterprises = response.data.enterprises;
+    $scope.getEnterprises = function(){
+        HttpService.getEnterprises(function(result){
+            $scope.enterprises = HttpService.enterprises;
             for(var i=0;i<$scope.enterprises.length;i+=2){
                 $scope.split_enterprises.push($scope.enterprises.slice(i,i+2));
             }
-            console.log($scope.split_enterprises);
-        },
-        function error(response){
-            alert("No hay empresas registradas :(");
-        }
-    );
+            console.log($scope.enterprises);
+        });
+    }
+
+    $scope.getEnterprises();
 });
 
-app.controller('searchController',function($scope,$http){
-    $http.get('api/offers').then(function(response){
-        $scope.offers = response.data.offers;
-    });
+app.controller('searchController',function($scope,HttpService){
+
+    $scope.getOffers = function(){
+        HttpService.getOffers(function(result){
+            $scope.offers = HttpService.offers;
+        });
+    };
+
+    $scope.getOffers();
+
 });
 
 function getUrl(){
@@ -406,7 +301,7 @@ function getUrl(){
     return result;
 }
 
-angular.module('myApp').run(function($rootScope, $http, $location, $localStorage, $templateCache){
+angular.module('myApp').run(function($rootScope, $location, $http, $localStorage, $templateCache){
     // keep user logged in after page refresh
     if ($localStorage.currentUser) {
         $http.defaults.headers.common.Authorization = 'Bearer ' + $localStorage.currentUser.token;
