@@ -161,7 +161,7 @@ router.put('/:id', function(req, res){
                 website : body.website,
                 phone : body.phone,
             }
-        },{new:true,runValidators:true} ,(err, enterpriseDB)=>{
+        },{new:true} ,(err, enterpriseDB)=>{
 
         if(err){
             return res.status(400).json({

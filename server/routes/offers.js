@@ -20,6 +20,28 @@ router.get('/',(req,res)=>{
     })
 })
 
+router.get('/:id', (req, res)=>{
+    let id = req.params.id;
+    Offer.findById(id)
+    .exec((err, offerDB)=>{
+        if(err){
+            return res.status(500).json({
+                err
+            })
+        }
+        if(!offerDB){
+            return res.status(400).json({
+                err:{
+                    message:'No hay oferta con ese id'
+                }
+            })
+        }
+        return res.json({
+            offer:offerDB
+        })
+    })
+})
+
 router.post('/', function(req, res){
     let body = req.body;
 
