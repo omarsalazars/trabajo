@@ -20,8 +20,8 @@ let applicationSchema = new Schema({
     status:{
         type:Number,
         required:true,
-        //0 for going, 1 for completed
-        default:0
+        //1 for active, 0 for finished
+        default:1
     },
     result:{
         type:Boolean,

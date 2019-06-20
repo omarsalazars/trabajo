@@ -207,5 +207,94 @@ router.get('/:id', (req, res)=>{
     })
 })
 
+router.put('/:id/proceed', (req, res)=>{
+    let id = req.params.id;
+
+    Application.findOneAndUpdate({$and:[{_id:id}, { status: 1 }]} , {$inc:{stage:1}}, {new:true})
+    .exec((err, applicationDB)=>{
+        if(err){
+            return res.json({
+                ok:false,
+                err
+            })
+        }
+        if(!applicationDB){
+            return res.json({
+                ok:false,
+                err
+            })
+        }
+
+        let description;
+        switch(applicationDB.stage){
+            case 0:
+                description="En espera de confirmación por parte de empresa";
+                break;
+            case 1:
+                description="Preguntas enviadas";
+                break;
+            case 2:
+                description="Ya métanse al videochat";
+                break;
+            case 3:
+                description="Ya le dieron el puesto al wey"
+                break;
+        }
+
+        if(applicationDB.stage==3){
+            Application.findByIdAndUpdate(id, {status:0}, {new:true})
+            .exec((err, finishedApplication)=>{
+                if(err){
+                    return res.json({
+                        ok:false,
+                        err
+                    })
+                }
+                if(!finishedApplication){
+                    return res.json({
+                        ok:false,
+                        err
+                    })
+                }
+                return res.json({
+                    finishedApplication,
+                    description
+                })
+            })
+        }
+        else{
+            return res.json({
+                applicationDB,
+                description
+            })
+        }
+
+        
+    })
+
+})
+
+router.put('/:id/finish', (req, res)=>{
+    let id = req.params.id;
+    
+    Application.findByIdAndUpdate(id, {status:0}, {new:true})
+    .exec((err, applicationDB)=>{
+        if(err){
+            return res.json({
+                ok:false,
+                err
+            })
+        }
+        if(!applicationDB){
+            return res.json({
+                ok:false,
+                err
+            })
+        }
+        return res.json({
+            applicationDB
+        })
+    })
+})
 
 module.exports = router;
