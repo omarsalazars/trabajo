@@ -124,4 +124,27 @@ router.put('/:id', function(req, res){
     });
 });
 
+router.delete('/:id', (req, res)=>{
+    Offer.findByIdAndDelete(id)
+    .exec((err, offerDB)=>{
+        if(err){
+            return json.status(500).json({
+                ok:false,
+                err
+            })
+        }
+        if(!offerDB){
+            return json.status(400).json({
+                ok:false,
+                err:{
+                    message:"No se encontro esa oferta"
+                }
+            }) 
+        }
+        res.json({
+            offer:offerDB
+        })
+    })
+})
+
 module.exports = router;
