@@ -10,7 +10,7 @@ router.get('/sendMail',async (req,res)=>{
     port: 587,
     secure: false, // true for 465, false for other ports
     auth: {
-      user: 'bolsadetrabajoisc2019', // generated ethereal user
+      user: 'bolsadetrabajoisc2019@outlook.com', // generated ethereal user
       pass: 'omarcarlos123' // generated ethereal password
     }
   });
