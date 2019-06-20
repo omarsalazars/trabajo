@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+var multer = require('multer');
 
 const { verifyToken} = require('../middlewares/authentication')
 
@@ -263,6 +264,54 @@ router.put('/:id', function(req, res){
         res.json({
             ok:true,
             enterprise: enterpriseDB
+        });
+    });
+});
+
+///SUBIR IMAGEN DE empresa
+router.put('/:id/upload/image', multer({dest: 'uploads/enterprises/images'}).single('file') , (req, res)=>{
+
+    if (Object.keys(req.files).length == 0) {
+        return res.status(400)
+            .json({
+            ok:false, 
+            err:{
+                message:'No files were uploaded.'
+            }
+        });
+    }
+
+    let file = req.files.file;
+    let ext = file.name.split('.');
+    ext = ext[ext.length-1];  
+
+    let validImageExtensions = ['png', 'jpg', 'jpeg', 'PNG'];
+
+    if(!validImageExtensions.includes(ext)){
+        return res.status(400).json({
+            ok:false,
+            err:{
+                message:'La extensión de la imagen no es valida hdp'
+            }
+        })
+    }
+    ///CAMBIAR NOMBRE AL ARCHIVO
+
+    let fileName = `${req.params.id}.jpg`;
+    // Use the mv() method to place the file somewhere on your server
+
+    file.mv(`${__dirname}/../../server/uploads/enterprises/images/${fileName}`, (err)=>{
+        if (err)
+            return res.status(500).json({
+                ok:false,
+                err
+            })
+
+        //AQUI archivo CARGADo
+
+        res.json({
+            ok:true, 
+            message:'File uploaded!'
         });
     });
 });

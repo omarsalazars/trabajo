@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const multer = require('multer');
 
 let Offer = require('../models/offer');
 
@@ -146,5 +147,52 @@ router.delete('/:id', (req, res)=>{
         })
     })
 })
+
+///SUBIR PREGUNTAS DE UNA OFFER
+router.put('/:id/upload/questions', multer({dest: 'uploads/offers/questions'}).single('file'), (req, res)=>{
+
+    if (Object.keys(req.files).length == 0) {
+        return res.status(400)
+            .json({
+            ok:false, 
+            err:{
+                message:'No files were uploaded.'
+            }
+        });
+    }
+
+    let file = req.files.file;
+    let ext = file.name.split('.');
+    ext = ext[ext.length-1];  
+
+    if(ext != 'pdf'){
+        return res.status(400).json({
+            ok:false,
+            err:{
+                message:'El cuestionario solo puede ser pdf'
+            }
+        })
+    }
+
+    ///CAMBIAR NOMBRE AL ARCHIVO
+
+    let fileName = `${req.params.id}.${ext}`;
+    // Use the mv() method to place the file somewhere on your server
+
+    file.mv(`${__dirname}/../../server/uploads/offers/questions/${fileName}`, (err)=>{
+        if (err)
+            return res.status(500).json({
+                ok:false,
+                err
+            })
+
+        //AQUI archivo CARGADo
+
+        res.json({
+            ok:true, 
+            message:'File uploaded!'
+        });
+    });
+});
 
 module.exports = router;

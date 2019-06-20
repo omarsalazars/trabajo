@@ -203,9 +203,9 @@ router.post('/login', (req, res)=>{
     })
 })
 
-router.post('/upload/:folder', [verifyToken, multer({dest: 'uploads/images'}).single('file') ], (req, res)=>{
 
-    console.log(__dirname);
+///SUBIR IMAGEN DE USUARIO
+router.put('/upload/image', [verifyToken, multer({dest: 'uploads/users/images'}).single('file') ], (req, res)=>{
 
     if (Object.keys(req.files).length == 0) {
         return res.status(400)
@@ -218,13 +218,12 @@ router.post('/upload/:folder', [verifyToken, multer({dest: 'uploads/images'}).si
     }
 
     let file = req.files.file;
-    let folder = req.params.folder;
     let ext = file.name.split('.');
     ext = ext[ext.length-1];  
 
     let validImageExtensions = ['png', 'jpg', 'jpeg', 'PNG'];
 
-    if(folder=='images' && !validImageExtensions.includes(ext)){
+    if(!validImageExtensions.includes(ext)){
         return res.status(400).json({
             ok:false,
             err:{
@@ -232,11 +231,48 @@ router.post('/upload/:folder', [verifyToken, multer({dest: 'uploads/images'}).si
             }
         })
     }
-    if(folder=='curriculums' && ext != 'pdf'){
+    ///CAMBIAR NOMBRE AL ARCHIVO
+
+    let fileName = `${req.user._id}.jpg`;
+    // Use the mv() method to place the file somewhere on your server
+
+    file.mv(`${__dirname}/../../server/uploads/users/images/${fileName}`, (err)=>{
+        if (err)
+            return res.status(500).json({
+                ok:false,
+                err
+            })
+
+        //AQUI archivo CARGADo
+
+        res.json({
+            ok:true, 
+            message:'File uploaded!'
+        });
+    });
+});
+///SUBIR CURRICULUM DE USUARIO
+router.put('/upload/curriculum', [verifyToken, multer({dest: 'uploads/users/curriculums'}).single('file') ], (req, res)=>{
+
+    if (Object.keys(req.files).length == 0) {
+        return res.status(400)
+            .json({
+            ok:false, 
+            err:{
+                message:'No files were uploaded.'
+            }
+        });
+    }
+
+    let file = req.files.file;
+    let ext = file.name.split('.');
+    ext = ext[ext.length-1];  
+
+    if(ext != 'pdf'){
         return res.status(400).json({
             ok:false,
             err:{
-                message:'El curriculum solo tiene que ser pdf'
+                message:'El curriculum solo puede ser pdf'
             }
         })
     }
@@ -246,7 +282,7 @@ router.post('/upload/:folder', [verifyToken, multer({dest: 'uploads/images'}).si
     let fileName = `${req.user._id}.${ext}`;
     // Use the mv() method to place the file somewhere on your server
 
-    file.mv(`${__dirname}/../../server/uploads/users/${folder}/${fileName}`, (err)=>{
+    file.mv(`${__dirname}/../../server/uploads/users/curriculums/${fileName}`, (err)=>{
         if (err)
             return res.status(500).json({
                 ok:false,
@@ -262,6 +298,7 @@ router.post('/upload/:folder', [verifyToken, multer({dest: 'uploads/images'}).si
     });
 });
 
+//ACTUALIZAR USUARIO
 
 router.put('/:id', function(req, res){
     let id = req.params.id;
