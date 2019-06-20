@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const multer = require('multer');
+const { sendUploadedAnswersMail} = require('../helpers/mailing')
 
 let Application = require('../models/application');
 let Offer = require('../models/offer');
@@ -384,7 +385,18 @@ router.put('/:id/upload/answers', multer({dest: 'uploads/applications/answers'})
                 err
             })
 
-        //AQUI archivo CARGADo
+        //AQUI archivo CARGADO
+
+        Application.findById(id)
+        .exec((err, applicationDB)=>{
+            Offer.findById(applicationDB.offer)
+            .exec((err, offerDB)=>{
+                Enterprise.findById(offerDB.enterprise)
+                .exec((err, enterpriseDB)=>{
+                    sendUploadedAnswersMail(enterpriseDB.email, enterpriseDB.name);
+                })
+            })
+        })
 
         res.json({
             ok:true, 
