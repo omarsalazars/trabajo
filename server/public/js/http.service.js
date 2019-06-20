@@ -28,6 +28,7 @@ function HttpService($http,$localStorage){
     httpService.addUser = addUser;
     httpService.updateUserInfo = updateUserInfo;
     httpService.updateUserImage = updateUserImage;
+    httpService.updateUserCurriculum = updateUserCurriculum;
     httpService.deleteUser = '';
 
     //Enterprises
@@ -44,9 +45,10 @@ function HttpService($http,$localStorage){
     httpService.getApplications = getApplications;
     httpService.getApplicationById = getApplicationById;
     httpService.getApplicationsByEnterpriseId = getApplicationsByEnterpriseId;
+    httpService.getApplicationsByUserId = getApplicationsByUserId;
     httpService.addApplication = addApplication;
     httpService.proceedApplication = proceedApplication;
-    httpService.deleteApplication = '';
+    httpService.deleteApplication = deleteApplication;
 
     return httpService;
 
@@ -77,9 +79,11 @@ function HttpService($http,$localStorage){
         }).then(
             function success(response){
                 httpService.offer = response.data.offer;
+                callback(true);
             },
             function error(response){
                 console.log("No existe la oferta");
+                callback(false);
             }
         );
     }
@@ -128,23 +132,25 @@ function HttpService($http,$localStorage){
     }
 
     function updateOfferInfo(offer,callback){
-        var url = getUrl() + '/api/offers/' + $routeParams.id;
+        var url = getUrl() + '/api/offers/' + offer.id;
         $http({
             method: 'PUT',
             url: url,
             data: {
-                enterprise: $scope.offer.enterprise,
-                position: $scope.offer.position,
-                description: $scope.offer.description,
-                salary: $scope.offer.salary,
-                travel: $scope.offer.travel
+                enterprise: offer.enterprise,
+                position: offer.position,
+                description: offer.description,
+                salary: offer.salary,
+                travel: offer.travel
             }
         }).then(
             function success(response){
-                alert('Oferta actualizada correctamente')
+                alert('Oferta actualizada correctamente');
+                callback(true);
             },
             function error(response){
                 alert('Error actualizando la oferta');
+                callback(false);
             }
         );
     }
@@ -239,6 +245,27 @@ function HttpService($http,$localStorage){
 
     function updateUserImage(id,token,formData,callback){
         var url = getUrl() + '/api/users/upload/images/';
+        $http({
+            url: url,
+            method: 'POST',
+            headers: {
+                token: token,
+                'Content-Type' : undefined
+            },
+            data: formData
+        }).then(
+            function success(response){
+                callback(true);
+            },
+            function error(response){
+                console.log(response);
+                callback(false);
+            }
+        );
+    }
+
+    function updateUserCurriculum(id, token, formData, callback){
+        var url = getUrl() + '/api/users/upload/curriculum/';
         $http({
             url: url,
             method: 'POST',
@@ -444,6 +471,21 @@ function HttpService($http,$localStorage){
         );
     }
 
+    function getApplicationsByUserId(user,callback){
+        $http({
+            method: 'GET',
+            url : getUrl() + '/api/applications/user/'+user._id,
+        }).then(
+            function success(response){
+                httpService.applications = response.data.applications;
+                callback(true);
+            },
+            function error(response){
+                callback(false);
+            }
+        );
+    }
+
     function addApplication(user,offer,token,callback){
         $http({
             method: 'POST',
@@ -486,6 +528,22 @@ function HttpService($http,$localStorage){
                 callback(true);
             },
             function error(response){
+                callback(false);
+            }
+        );
+    }
+    
+    function deleteApplication(application, callback){
+        $http({
+            method: 'DELETE',
+            url: getUrl() + '/api/applications/'+application._id
+        }).then(
+            function success(response){
+                alert('Se ha borrado el registro exitosamente');
+                callback(true);
+            },
+            function error(response){
+                alert('Error al borrar el registo');
                 callback(false);
             }
         );

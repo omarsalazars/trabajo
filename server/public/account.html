@@ -91,23 +91,29 @@
             <thead class="thead-dark">
                 <tr>
                     <th scope="col">#</th>
-                    <th scope="col">Nombre</th>
-                    <th scope="col">Sitio web</th>
-                    <th scope="col">Teléfono</th>
-                    <th scope="col">Email</th>
+                    <th scope="col">Puesto</th>
+                    <th scope="col">Id Empresa</th>
+                    <th scope="col">Status</th>
+                    <th scope="col"></th>
                     <th scope="col"></th>
                 </tr>
             </thead>
             <tbody>
-                <tr ng-repeat="o in offers">
-                    <th scope="row">{{e._id}}</th>
-                    <td>{{e.name}}</td>
-                    <td>{{e.website}}</td>
-                    <td>{{e.phone}}</td>
-                    <td>{{e.email}}</td>
+                <tr ng-repeat="a in applications">
+                    <th scope="row">{{a._id}}</th>
+                    <td>{{a.offer.position}}</td>
+                    <td>{{a.enterprise}}</td>
+                    <td>{{a.stage}}</td>
                     <td>
-                        <button type="button" class="btn btn-info">
-                            Administrar
+                        <a href="#!aplicacion/{{a._id}}">
+                            <button type="button" class="btn btn-info">
+                                Administrar
+                            </button>
+                        </a>
+                    </td>
+                    <td>
+                        <button type="button" ng-click="deleteApplication(a)" class="btn btn-danger">
+                            Eliminar
                         </button>
                     </td>
                 </tr>

@@ -39,9 +39,11 @@
                     <td>{{offer.description}}</td>
                     <td>{{offer.country}}</td>
                     <td>
-                        <button type="button" ng-click="proceedApplication(offer)" class="btn btn-info">
-                            Me interesa
-                        </button>
+                        <a href="#!oferta/{{offer._id}}">
+                            <button type="button" class="btn btn-info">
+                                Me interesa
+                            </button>
+                        </a>
                     </td>
                 </tr>
             </tbody>

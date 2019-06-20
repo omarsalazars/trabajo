@@ -1,0 +1,44 @@
+<div class="container my-5">
+    <div class="text-center">
+        <h1>{{offer.position}}</h1>
+    </div>
+    <div class="row">
+        <div class="text-center col-md-6 col-xs-12">
+            <h3>Descripcion</h3>
+            <p>{{offer.description}}</p>
+        </div>
+        <div class="col-md-6 col-xs-12 text-center">
+            <h3>Salario: ${{offer.salary}}</h3>
+            <h5>Disponibilidad para viajar: {{offer.travel}}</h5>
+        </div>
+    </div>
+    <div class="text-center py-4">
+        <button type="button" ng-click="proceedApplication(offer)" class="btn btn-info" style="width: 100%">
+            Aplicar
+        </button>
+    </div>
+
+    <!--Información de la empresa-->
+    <div class="text-center py-4">
+        <h3>Información de la empresa</h3>
+    </div>
+    <div class="row py-4">
+        <div class="col-md-6 col-xs-12 text-center">
+            <img src="{{enterprise._id}}.jpg" class="img-fluid">
+        </div>
+        <div class="col-md-6 col-xs-12 text-center">
+            <a href="#!enterprise/{{enterprise._id}}">
+                <h4>{{enterprise.name}}</h4>
+            </a>
+            <a href="mailto:{{enterprise.email}}">
+                <p>{{enterprise.email}}</p>
+            </a>
+            <a href="tel:{{enterprise.phone}}">
+                <p>
+                    {{enterprise.phone}}
+                </p>
+            </a>
+            <p>{{enterprise.country}}</p>
+        </div>
+    </div>
+</div>

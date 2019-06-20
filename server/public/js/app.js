@@ -41,13 +41,48 @@ app.config(function($routeProvider){
         .when("/oferta/:id",{
         templateUrl: '../oferta.html',
         controller: 'ofertaController'
+    })
+        .when("/aplicacion/:id",{
+        templateUrl: '../aplicacion.html',
+        controller: "aplicacionController"
     });
 });
 
-app.controller("ofertaController", function($scope,$routeParams, HttpService){
-    $scope.getOffer = function(){
 
+//Vista al público de la oferta
+app.controller("ofertaController", function($scope,$routeParams, $localStorage, $window, HttpService){
+    $scope.getEnterprise = function(){
+        HttpService.getEnterpriseById(
+            $scope.offer.enterprise,
+            function(result){
+                $scope.enterprise = HttpService.enterprise;
+            }
+        );
     }
+
+    $scope.getOffer = function(){
+        HttpService.getOfferById(
+            $routeParams.id,
+            function(result){
+                $scope.offer = HttpService.offer;
+                console.log($scope.offer);
+                $scope.getEnterprise();
+            }
+        );
+    };
+
+    $scope.proceedApplication = function(offer){
+        HttpService.addApplication(
+            $localStorage.currentUser.user,
+            offer,
+            $localStorage.currentUser.token,
+            function(result){
+                $window.location.href="/aplicacion/"+HttpService.application._id;
+            }
+        );
+    }
+
+    $scope.getOffer();
 
 });
 
@@ -63,7 +98,12 @@ app.controller("offerController",function($scope,$routeParams,HttpService){
     };
 
     $scope.updateOffer = function(){
-
+        HttpService.updateOfferInfo(
+            $scope.offer,
+            function(result){
+                $scope.offer = HttpService.offer;
+            }
+        );
     }
 
     $scope.getOffer();
@@ -80,23 +120,12 @@ app.controller("publicEnterpriseController",function($scope,$routeParams, $windo
             }
         );
     }
-    
+
     $scope.getOffers = function(){
         HttpService.getOffersByEnterpriseId(
             $routeParams.id,
             function(result){
                 $scope.offers = HttpService.offers;
-            }
-        );
-    }
-    
-    $scope.proceedApplication = function(offer){
-        HttpService.addApplication(
-            $localStorage.currentUser.user,
-            offer,
-            $localStorage.currentUser.token,
-            function(result){
-                $window.location.href="/aplicacion/"+HttpService.application._id;
             }
         );
     }
@@ -218,6 +247,15 @@ app.controller('accountController',function($scope,$localStorage,HttpService){
 
     };
 
+    $scope.getApplications = function(){
+        HttpService.getApplicationsByUserId(
+            $localStorage.currentUser.user,
+            function(result){
+                $scope.applications = HttpService.applications;
+            }
+        );
+    };
+    
     $scope.getEnterprises = function(){
         angular.forEach($localStorage.currentUser.user.managed_enterprises, function(value, key){
             HttpService.getEnterpriseById(value,function(result){
@@ -244,25 +282,52 @@ app.controller('accountController',function($scope,$localStorage,HttpService){
             }
         );
     };
-    
+
     $scope.updateUserInfo = function(){
         HttpService.updateUserInfo(
             $scope.user,
             $localStorage.currentUser.token,
             function(result){
-                
+
+            }
+        );
+    };
+
+    $scope.updateUserCurriculum = function(){
+        var formData = new FormData();
+        var file = $("#curriculum").prop('files')[0];
+        formData.append('file',file);
+
+        console.log(file);
+
+        HttpService.updateUserCurriculum(
+            $scope.user._id,
+            $localStorage.currentUser.token,
+            formData,
+            function(result){
+
+            }
+        );
+    };
+
+    $scope.update = function(){
+        $scope.updateUserInfo();
+        $scope.updateUserImage();
+        $scope.updateUserCurriculum();
+    };
+
+    $scope.deleteApplication = function(applicationId){
+        HttpService.deleteApplication(
+            applicationId,
+            function(result){
+                $scope.getApplications();
             }
         );
     };
     
-    $scope.update = function(){
-        $scope.updateUserInfo();
-        $scope.updateUserImage();
-        //falta actualizar usuario por PUT
-    };
-
     $scope.getUser();
     $scope.getEnterprises();
+    $scope.getApplications();
 });
 
 app.controller('indexController',function($scope){
@@ -291,8 +356,8 @@ app.controller('loginController',function($scope, $location, AuthenticationServi
 });
 
 app.controller('enterprisesController', function($scope,HttpService){
-    
-    
+
+
     $scope.split_enterprises=[];
     $scope.getEnterprises = function(){
         HttpService.getEnterprises(function(result){
