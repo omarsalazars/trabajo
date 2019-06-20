@@ -298,4 +298,27 @@ router.put('/:id/finish', (req, res)=>{
     })
 })
 
+router.delete('/:id', (req, res)=>{
+    Application.findByIdAndDelete(id)
+    .exec((err, applicationDB)=>{
+        if(err){
+            return json.status(500).json({
+                ok:false,
+                err
+            })
+        }
+        if(!applicationDB){
+            return json.status(400).json({
+                ok:false,
+                err:{
+                    message:"No se encontro esa oferta"
+                }
+            }) 
+        }
+        res.json({
+            application:applicationDB
+        })
+    })
+})
+
 module.exports = router;
