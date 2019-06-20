@@ -9,21 +9,22 @@ const { verifyToken} = require('../middlewares/authentication');
 //GET ALL APPLICATIONS
 
 router.get('/',(req,res)=>{
-    Application.find({})
-    .populate('offer')
-    .populate('user')
-    .exec((err, applications)=>{
-        if(err){
-            return res.status(500).json({
-                ok:false,
-                err
+
+    Application.find()
+        .populate('offer')
+        .populate('user')
+        .exec((err, applications)=>{
+            if(err){
+                return res.status(500).json({
+                    ok:false,
+                    err
+                })
+            }
+            res.json({
+                ok:true,
+                applications
             })
-        }
-        res.json({
-            ok:true,
-            applications
         })
-    })
 })
 
 //POST APPLICATION TAKING USER ID FROM TOKEN IN HEADER

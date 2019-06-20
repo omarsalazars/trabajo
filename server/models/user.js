@@ -34,6 +34,10 @@ let userSchema = new Schema({
         type: Boolean,
         default: false
     },
+    active:{
+        type:Boolean,
+        default:1
+    },
     managed_enterprises: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Enterprise'

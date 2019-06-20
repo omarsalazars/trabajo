@@ -10,9 +10,12 @@ const { sendVerificationMail} = require('../helpers/mailing')
 const bcrypt = require('bcrypt');
 
 let User = require('../models/user');
+let Application = require('../models/application');
+let Enterprise = require('../models/enterprise');
+
 
 router.get('/',(req,res)=>{
-    User.find({})
+    User.find({active:true})
         .exec((err, users)=>{
         if(err){
             return res.status(500).json({
@@ -82,18 +85,17 @@ router.post('/', function(req, res){
 
 });
 
-router.delete('/:id', async function(req, res){
+// BAJA LOGICA A USUARIO POR ID
+router.delete('/:id', function(req, res){
 
     let id = req.params.id;
 
-    /*let changeStatus={
-        status:false
-    };
+    //SE QUITAN TODAS LAS EMPRESAS DE LAS EMPRESAS QUE EL WEY YA ADMINISTRABA
 
-    User.findByIdAndUpdate(id, changeStatus,{new:true},(err, removedUser)=>{
+    User.findByIdAndUpdate(id, {active:false, managed_enterprises:[]},{new:true},(err, removedUser)=>{
 
         if(err){
-            return res.status(400).json({
+            return res.status(500).json({
                 ok:false,
                 err
             })
@@ -106,33 +108,50 @@ router.delete('/:id', async function(req, res){
                 }
             })
         }
+        ///BAJA FISICA A LAS APLICACIONES QUE HABIA HECHO ESE USUARIO
+        Application.deleteMany({user:id})
+        .exec((err, removedApplications)=>{
+            if(err){
+                return res.status(500).json({
+                    ok:false,
+                    err
+                })
+            }
+            if(!removedApplications){
+                return res.status(400).json({
+                    ok:false,
+                    err:{
+                        message:'No se borraron aplicaciones'
+                    }
+                })
+            }
+        })
+
+        //QUITAR AL USUARIO DE LAS EMPRESAS QUE ADMINISTRABA
+
+        Enterprise.updateMany({admins:id}, {$pull:{admins:id}})
+        .exec((err, enterpriseDB)=>{
+            if(err){
+                return res.status(500).json({
+                    ok:false,
+                    err
+                })
+            }
+            if(!enterpriseDB){
+                return res.status(400).json({
+                    ok:false,
+                    err:{
+                        message:'No se borró nada'
+                    }
+                })
+            }
+        })
+        
+        
         res.json({
             ok:true,
             user:removedUser
         });
-    });*/
-
-    //FISICA
-    await User.findByIdAndRemove(id, (err, removedUser)=>{
-        if(err){
-            return res.status(400).json({
-                ok:false,
-                err
-            })
-        }
-        if(!removedUser){
-            return res.status(400).json({
-                ok:false,
-                err:{
-                    message:'User not found'
-                }
-            })
-        }
-        res.json({
-            ok:true,
-            user:removedUser
-        })
-
     });
 });
 
@@ -146,7 +165,7 @@ router.post('/login', (req, res)=>{
                 err
             })
         }
-        if( !userDB ){
+        if( !userDB || !userDB.active ){
             return res.status(400).json({
                 ok:false,
                 err:{
