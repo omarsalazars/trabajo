@@ -32,7 +32,7 @@
         <div class="row">
             <div class="col-md-6 col-xs-12">
                 <label>Foto de perfil</label>
-                <img id="profile" class="img-fluid img-thumbnail rounded" src="../uploads/users/images/{{user._id}}.jpg">
+                <img id="profile" class="img-fluid img-thumbnail rounded" src="api/files/users/images/{{user._id}}.jpg">
             </div>
             <div class="col-md-6 col-xs-12">
                 <label>Archivos</label>
@@ -92,7 +92,7 @@
                 <tr>
                     <th scope="col">#</th>
                     <th scope="col">Puesto</th>
-                    <th scope="col">Id Empresa</th>
+                    <th scope="col">Empresa</th>
                     <th scope="col">Status</th>
                     <th scope="col"></th>
                     <th scope="col"></th>
@@ -102,7 +102,7 @@
                 <tr ng-repeat="a in applications">
                     <th scope="row">{{a._id}}</th>
                     <td>{{a.offer.position}}</td>
-                    <td>{{a.enterprise}}</td>
+                    <td>{{a.offer.enterprise.name}}</td>
                     <td>{{a.stage}}</td>
                     <td>
                         <a href="#!aplicacion/{{a._id}}">

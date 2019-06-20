@@ -300,7 +300,7 @@ router.put('/:id/finish', (req, res)=>{
 })
 
 router.delete('/:id', (req, res)=>{
-    Application.findByIdAndDelete(id)
+    Application.findByIdAndDelete(req.params.id)
     .exec((err, applicationDB)=>{
         if(err){
             return json.status(500).json({

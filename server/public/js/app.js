@@ -45,7 +45,96 @@ app.config(function($routeProvider){
         .when("/aplicacion/:id",{
         templateUrl: '../aplicacion.html',
         controller: "aplicacionController"
+    })
+        .when("/application/:id",{
+        templateUrl: '../application.html',
+        controller: "applicationController"
     });
+});
+
+app.controller("applicationController",function($scope, $routeParams, HttpService){
+
+    $scope.getApplication = function(){
+        HttpService.getApplicationById(
+            $routeParams.id,
+            function(result){
+                $scope.application = HttpService.application;
+                $scope.getEnterprise();
+                console.log($scope.application)
+            }
+        );
+    };
+
+    $scope.getEnterprise = function(){
+        HttpService.getEnterpriseById(
+            $scope.application.offer.enterprise,
+            function(result){
+                $scope.application.offer.enterprise = HttpService.enterprise;
+            }
+        );
+    }
+
+    $scope.proceedApplication = function(){
+        HttpService.proceedApplication(
+            $scope.application._id,
+            function(result){
+                $scope.getApplication();
+            }
+        );
+    }
+
+    $scope.getApplication();
+});
+
+//Vista de usuario de la aplicacion
+app.controller("aplicacionController",function($scope, $routeParams, HttpService){
+
+    $scope.getApplication = function(){
+        HttpService.getApplicationById(
+            $routeParams.id,
+            function(result){
+                $scope.application = HttpService.application;
+                $scope.getEnterprise();
+                console.log($scope.application)
+            }
+        );
+    };
+
+    $scope.getEnterprise = function(){
+        HttpService.getEnterpriseById(
+            $scope.application.offer.enterprise,
+            function(result){
+                $scope.application.offer.enterprise = HttpService.enterprise;
+            }
+        );
+    };
+
+    $scope.uploadAnswers = function(){
+
+        var formData = new FormData();
+        var file = $("#answers").prop('files')[0];
+        formData.append('file',file);
+
+        HttpService.uploadAnswers(
+            $scope.application,
+            formData,
+            function(result){
+                $scope.proceedApplication();
+            }
+        );
+    };
+
+    $scope.proceedApplication = function(){
+        HttpService.proceedApplication(
+            $scope.application._id,
+            function(result){
+                $scope.getApplication();
+            }
+        );
+    }
+
+    $scope.getApplication();
+
 });
 
 
@@ -77,7 +166,7 @@ app.controller("ofertaController", function($scope,$routeParams, $localStorage, 
             offer,
             $localStorage.currentUser.token,
             function(result){
-                $window.location.href="/aplicacion/"+HttpService.application._id;
+                $window.location.href="#!aplicacion/"+HttpService.application._id;
             }
         );
     }
@@ -149,9 +238,9 @@ app.controller('enterpriseController',function($localStorage,$scope,$routeParams
     };
 
     //PUT ENTERPRISE
-    $scope.updateEnterprise = function(){
+    $scope.updateEnterpriseInfo = function(){
         HttpService.updateEnterpriseInfo(
-            enterprise,
+            $scope.enterprise,
             $localStorage.currentUser.token,
             function(result){
                 alert('Se actualizó correctamente');
@@ -165,6 +254,7 @@ app.controller('enterpriseController',function($localStorage,$scope,$routeParams
             $routeParams.id,
             function(result){
                 $scope.applications = HttpService.applications;
+                console.log($scope.applications);
             }
         );
     };
@@ -218,6 +308,28 @@ app.controller('enterpriseController',function($localStorage,$scope,$routeParams
         );
     }
 
+    $scope.updateEnterpriseImage = function(){
+        var formData = new FormData();
+        var file = $("#imagen").prop('files')[0];
+        formData.append('file',file);
+
+        HttpService.updateEnterpriseImage(
+            $scope.enterprise._id,
+            formData,
+            function(result){
+                var image = document.querySelector('#profile').src;
+                document.querySelector('#profile').src='';
+                document.querySelector('#profile').src=image;
+                console.log("cambio la imagen");
+            }
+        );
+    };
+    
+    $scope.updateEnterprise = function(){
+        $scope.updateEnterpriseInfo();
+        $scope.updateEnterpriseImage();
+    }
+
     $scope.getEnterprise();
     $scope.getApplications();
     $scope.getOffers();
@@ -252,10 +364,19 @@ app.controller('accountController',function($scope,$localStorage,HttpService){
             $localStorage.currentUser.user,
             function(result){
                 $scope.applications = HttpService.applications;
+                //get Applications enterprises
+                angular.forEach($scope.applications,function(application,key){
+                    HttpService.getEnterpriseById(
+                        application.offer.enterprise,
+                        function(result){
+                            application.offer.enterprise=HttpService.enterprise;
+                        }
+                    );
+                });
             }
         );
     };
-    
+
     $scope.getEnterprises = function(){
         angular.forEach($localStorage.currentUser.user.managed_enterprises, function(value, key){
             HttpService.getEnterpriseById(value,function(result){
@@ -324,7 +445,7 @@ app.controller('accountController',function($scope,$localStorage,HttpService){
             }
         );
     };
-    
+
     $scope.getUser();
     $scope.getEnterprises();
     $scope.getApplications();

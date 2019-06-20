@@ -49,6 +49,7 @@ function HttpService($http,$localStorage){
     httpService.addApplication = addApplication;
     httpService.proceedApplication = proceedApplication;
     httpService.deleteApplication = deleteApplication;
+    httpService.uploadAnswers = uploadAnswers;
 
     return httpService;
 
@@ -377,10 +378,14 @@ function HttpService($http,$localStorage){
             method: 'PUT',
             url: url,
             data: {
-                //FALTA DATA
+                name: enterprise.name,
+                email: enterprise.email,
+                website: enterprise.website,
+                phone: enterprise.phone
             }
         }).then(
             function success(response){
+                console.log(response);
                 callback(true);
             },
             function error(response){
@@ -391,8 +396,24 @@ function HttpService($http,$localStorage){
 
     }
 
-    function updateEnterpriseImage(id,image,token,callback){
-
+    function updateEnterpriseImage(id,formData,callback){
+        $http({
+            method: 'PUT',
+            url: getUrl() + '/api/enterprises/'+id+'/upload/image',
+            headers:{
+                'Content-Type': undefined
+            },
+            data: formData
+        }).then(
+            function success(response){
+                console.log();
+                console.log(response);
+                callback(true);
+            },
+            function error(response){
+                callback(false);
+            }
+        );
     }
 
     function deleteEnterpriseAdmin(enterpriseId, adminId, token, callback){
@@ -461,7 +482,8 @@ function HttpService($http,$localStorage){
             url: url
         }).then(
             function success(response){
-                HttpService.applications = response.data.applications;
+                httpService.applications = response.data.applications;
+                console.log(response.data.applications);
                 callback(true);
             },
             function error(response){
@@ -516,15 +538,16 @@ function HttpService($http,$localStorage){
         );
     }
 
-    function proceedApplication(offerId, callback){
+    function proceedApplication(applicationId, callback){
         console.log('Proceed application');
         $http({
             method: 'PUT',
-            url: getUrl() + '/api/offers/'+offerId+'/proceed'
+            url: getUrl() + '/api/applications/'+applicationId+'/proceed'
         }).then(
             function success(response){
                 console.log(response.data);
                 httpService.application = response.data.application;
+                alert("La aplicación pasará a la siguiente etapa");
                 callback(true);
             },
             function error(response){
@@ -544,6 +567,29 @@ function HttpService($http,$localStorage){
             },
             function error(response){
                 alert('Error al borrar el registo');
+                console.log(response);
+                callback(false);
+            }
+        );
+    }
+    
+    function uploadAnswers(application,formData,callback){
+        var url = getUrl() + '/api/applications/'+ application._id +'/upload/answers';
+        $http({
+            url: url,
+            method: 'PUT',
+            headers: {
+                'Content-Type' : undefined
+            },
+            data: formData
+        }).then(
+            function success(response){
+                alert('El archivo se ha subido correctamente');
+                callback(true);
+            },
+            function error(response){
+                alert('Hubo un error subiendo el archivo');
+                console.log(response);
                 callback(false);
             }
         );
