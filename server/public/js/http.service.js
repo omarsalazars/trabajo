@@ -20,7 +20,7 @@ function HttpService($http,$localStorage){
     httpService.addOffer = addOffer;
     httpService.updateOfferInfo = updateOfferInfo;
     httpService.updateOfferFile = updateOfferFile;
-    httpService.deleteOffer = '';
+    httpService.deleteOffer = deleteOffer;
 
     //Users
     httpService.getUsers = getUsers;
@@ -28,7 +28,8 @@ function HttpService($http,$localStorage){
     httpService.addUser = addUser;
     httpService.updateUserInfo = updateUserInfo;
     httpService.updateUserImage = updateUserImage;
-    httpService.deleteUser = '';
+    httpService.updateUserCurriculum = updateUserCurriculum;
+    httpService.deleteUser = deleteUser;
 
     //Enterprises
     httpService.getEnterprises = getEnterprises;
@@ -44,9 +45,11 @@ function HttpService($http,$localStorage){
     httpService.getApplications = getApplications;
     httpService.getApplicationById = getApplicationById;
     httpService.getApplicationsByEnterpriseId = getApplicationsByEnterpriseId;
+    httpService.getApplicationsByUserId = getApplicationsByUserId;
     httpService.addApplication = addApplication;
     httpService.proceedApplication = proceedApplication;
-    httpService.deleteApplication = '';
+    httpService.deleteApplication = deleteApplication;
+    httpService.uploadAnswers = uploadAnswers;
 
     return httpService;
 
@@ -77,9 +80,11 @@ function HttpService($http,$localStorage){
         }).then(
             function success(response){
                 httpService.offer = response.data.offer;
+                callback(true);
             },
             function error(response){
                 console.log("No existe la oferta");
+                callback(false);
             }
         );
     }
@@ -128,23 +133,25 @@ function HttpService($http,$localStorage){
     }
 
     function updateOfferInfo(offer,callback){
-        var url = getUrl() + '/api/offers/' + $routeParams.id;
+        var url = getUrl() + '/api/offers/' + offer.id;
         $http({
             method: 'PUT',
             url: url,
             data: {
-                enterprise: $scope.offer.enterprise,
-                position: $scope.offer.position,
-                description: $scope.offer.description,
-                salary: $scope.offer.salary,
-                travel: $scope.offer.travel
+                enterprise: offer.enterprise,
+                position: offer.position,
+                description: offer.description,
+                salary: offer.salary,
+                travel: offer.travel
             }
         }).then(
             function success(response){
-                alert('Oferta actualizada correctamente')
+                alert('Oferta actualizada correctamente');
+                callback(true);
             },
             function error(response){
                 alert('Error actualizando la oferta');
+                callback(false);
             }
         );
     }
@@ -152,10 +159,41 @@ function HttpService($http,$localStorage){
     function updateOfferFile(id,token,file,callback){
 
     }
+    
+    function deleteOffer(id,callback){
+        $http({
+            method: 'DELETE',
+            url: getUrl() + '/api/offers/'+id
+        }).then(
+            function success(response){
+                console.log(response);
+                callback(true);
+            },
+            function error(response){
+                console.log(response);
+                callback(false);
+            }
+        );
+    }
     //Fin Offers
 
     //Inicio users
 
+    function deleteUser(id,callback){
+        $http({
+            method: 'DELETE',
+            url: getUrl() + '/api/users/'+id
+        }).then(
+            function success(response){
+                alert('Usuario eliminado');
+                callback(true);
+            },
+            function error(response){
+                callback(false);
+            }
+        );
+    }
+    
     function getUsers(callback){
         $http({
             method: 'GET',
@@ -193,7 +231,7 @@ function HttpService($http,$localStorage){
     function addUser(user,callback){
         $http({
             method: 'POST',
-            url: getUrl + '/api/users',
+            url: getUrl() + '/api/users',
             data: {
                 first_name : user.first_name,
                 last_name : user.last_name,
@@ -208,7 +246,8 @@ function HttpService($http,$localStorage){
                 callback(true);
             },
             function error(response){
-                alert('Error creando usuario');
+                alert('Error creando usuario'+ response.data.err._message);
+                console.log(response.data);
                 callback(false);
             }
         );
@@ -239,6 +278,27 @@ function HttpService($http,$localStorage){
 
     function updateUserImage(id,token,formData,callback){
         var url = getUrl() + '/api/users/upload/images/';
+        $http({
+            url: url,
+            method: 'POST',
+            headers: {
+                token: token,
+                'Content-Type' : undefined
+            },
+            data: formData
+        }).then(
+            function success(response){
+                callback(true);
+            },
+            function error(response){
+                console.log(response);
+                callback(false);
+            }
+        );
+    }
+
+    function updateUserCurriculum(id, token, formData, callback){
+        var url = getUrl() + '/api/users/upload/curriculum/';
         $http({
             url: url,
             method: 'POST',
@@ -350,10 +410,14 @@ function HttpService($http,$localStorage){
             method: 'PUT',
             url: url,
             data: {
-                //FALTA DATA
+                name: enterprise.name,
+                email: enterprise.email,
+                website: enterprise.website,
+                phone: enterprise.phone
             }
         }).then(
             function success(response){
+                console.log(response);
                 callback(true);
             },
             function error(response){
@@ -364,8 +428,24 @@ function HttpService($http,$localStorage){
 
     }
 
-    function updateEnterpriseImage(id,image,token,callback){
-
+    function updateEnterpriseImage(id,formData,callback){
+        $http({
+            method: 'PUT',
+            url: getUrl() + '/api/enterprises/'+id+'/upload/image',
+            headers:{
+                'Content-Type': undefined
+            },
+            data: formData
+        }).then(
+            function success(response){
+                console.log();
+                console.log(response);
+                callback(true);
+            },
+            function error(response){
+                callback(false);
+            }
+        );
     }
 
     function deleteEnterpriseAdmin(enterpriseId, adminId, token, callback){
@@ -434,11 +514,27 @@ function HttpService($http,$localStorage){
             url: url
         }).then(
             function success(response){
-                HttpService.applications = response.data.applications;
+                httpService.applications = response.data.applications;
+                console.log(response.data.applications);
                 callback(true);
             },
             function error(response){
                 console.log("No hay applications");
+                callback(false);
+            }
+        );
+    }
+
+    function getApplicationsByUserId(user,callback){
+        $http({
+            method: 'GET',
+            url : getUrl() + '/api/applications/user/'+user._id,
+        }).then(
+            function success(response){
+                httpService.applications = response.data.applications;
+                callback(true);
+            },
+            function error(response){
                 callback(false);
             }
         );
@@ -474,18 +570,58 @@ function HttpService($http,$localStorage){
         );
     }
 
-    function proceedApplication(offerId, callback){
+    function proceedApplication(applicationId, callback){
         console.log('Proceed application');
         $http({
             method: 'PUT',
-            url: getUrl() + '/api/offers/'+offerId+'/proceed'
+            url: getUrl() + '/api/applications/'+applicationId+'/proceed'
         }).then(
             function success(response){
                 console.log(response.data);
                 httpService.application = response.data.application;
+                alert("La aplicación pasará a la siguiente etapa");
                 callback(true);
             },
             function error(response){
+                callback(false);
+            }
+        );
+    }
+    
+    function deleteApplication(application, callback){
+        $http({
+            method: 'DELETE',
+            url: getUrl() + '/api/applications/'+application._id
+        }).then(
+            function success(response){
+                alert('Se ha borrado el registro exitosamente');
+                callback(true);
+            },
+            function error(response){
+                alert('Error al borrar el registo');
+                console.log(response);
+                callback(false);
+            }
+        );
+    }
+    
+    function uploadAnswers(application,formData,callback){
+        var url = getUrl() + '/api/applications/'+ application._id +'/upload/answers';
+        $http({
+            url: url,
+            method: 'PUT',
+            headers: {
+                'Content-Type' : undefined
+            },
+            data: formData
+        }).then(
+            function success(response){
+                alert('El archivo se ha subido correctamente');
+                callback(true);
+            },
+            function error(response){
+                alert('Hubo un error subiendo el archivo');
+                console.log(response);
                 callback(false);
             }
         );

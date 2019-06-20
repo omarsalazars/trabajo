@@ -1,0 +1,72 @@
+<!--ESTA ES PARA EL USUARIO-->
+<div class="container py-5">
+    <!--NO BORRAR-->
+    <div class="row">
+        <div class="col-xs-12 col-md-12 text-center">
+            <h1>{{application.offer.position}}</h1>
+            <h2>
+                <a href="#!enterprise/{{application.offer.enterprise._id}}">
+                    {{application.offer.enterprise.name}}
+                </a>
+            </h2>
+            <h3>Descripción:</h3>
+            <p>
+                {{application.offer.description}}
+            </p>
+            <h3>
+                Salario: ${{application.offer.salary}}
+            </h3>
+            <h3>
+                Disponibilidad para viajar: {{application.offer.travel}}
+            </h3>
+        </div>
+    </div>
+
+    <!--NO BORRAR-->
+
+
+    <!-- ESTADO 0 -->
+    <div ng-show="application.stage==0">
+        <h3 style="color:red">Estado:</h3>
+        <p>En espera de que la empresa nos de una respuesta a tu solicitud, regresa más tarde</p>
+    </div>
+    <!-- ESTADO 0 -->
+
+
+
+    <!-- ESTADO 1 -->
+    <div ng-show="application.stage==1">
+        <div class="row my-5">
+            <div class="col-md-12 col-xs-12 text-center">
+                <h1 style="color:cornflowerblue">¡FELICIDADES! La empresa ha mostrado interés en ti, Y te envía un documento con una entrevista.</h1>
+                <h1>Recuerda contestar las preguntas con calma y subirlas cuando estés listo</h1>
+                <div class="custom-file">
+                    <label for="answers" class="custom-file-label">Selecciona tu archivo de respuestas</label>
+                    <input id="answers" type="file" class="custom-file-input" placeholder="Escoger archivo de respuestas" >
+                </div>
+                <div class="text-center my-3">
+                    <button type="button" ng-click="uploadAnswers()" class="btn btn-success">Subir Respuestas</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- ESTADO 1 -->
+
+
+    <!-- ESTADO 2 -->
+    <div class="my-5 text-center" ng-show="application.stage==2">
+        <h1 style="color:forestgreen">Estamos esperando a que la empresa lea las respuestas de tu entrevista. Te notificaremos por correo cuando la empresa haya contestado a tu solicitud.</h1>
+    </div>
+    <!-- ESTADO 2 -->
+
+
+
+    <!-- ESTADO 3 -->
+    <div class="my-5 text-center" ng-show="application.stage==3">
+        <h1>La empresa se pondrá en contacto contigo para acordar un horario y hacer una entrevista en línea. La entrevista se llevará acabo en el siguiente link: <a href="https://bolsa-trabajo-videochat.herokuapp.com/">https://bolsa-trabajo-videochat.herokuapp.com/</a></h1>
+    </div>
+    <!-- ESTADO 3 -->
+
+
+
+</div>

@@ -1,0 +1,93 @@
+<!--ESTA ES PARA EL ADMIN DE LA PAGINA-->
+<div class="container my-5">
+    <!--NO BORRAR-->
+    <div class="row">
+        <div class="col-md-12 col-xs-12 text-center">
+            <h1>
+                Administrar {{application.offer.position}}
+            </h1>
+            <a href="#!enterprise/{{application.offer.enterprise._id}}">
+                <h2>
+                    {{application.offer.enterprise.name}}
+                </h2>
+            </a>
+            <p>Descripción: {{application.offer.description}}</p>
+            <p>Salario: ${{application.offer.salary}}</p>
+            <p>Disponibilidad de viaje: {{application.offer.travel}}</p>
+        </div>
+    </div>
+    <div class="text-center">
+        <h3 style="color:crimson">Información del aplicante</h3>
+    </div>
+    <div class="row">
+        <div class="col-md-6 col-xs-12 text-center">
+            <img  class="img-fluid" src="api/files/users/images/{{application.user._id}}.jpg">
+        </div>
+        <div class="col-md-6 col-xs-12 text-center my-5">
+            <h3>{{application.user.first_name}} {{application.user.last_name}}</h3>
+            <h3>{{application.user.country}}</h3>
+            <h3>{{application.user.email}}</h3>
+            <h3>{{application.user.phone}}</h3>
+            <a href="api/files/users/curriculum/{{application.user._id}}.pdf">
+                <button type="button" class="btn btn-info"> Revisar curriculum</button>
+            </a>
+        </div>
+    </div>
+    <!--NO BORRAR-->
+
+    <!--PASO 0-->
+    <div ng-show="application.stage==0">
+        <div class="row my-5">
+            <div class="col-md-6">
+                <button type="button" ng-click="proceedApplication()" class="btn btn-success" style="width:100%">Aceptar aplicante</button>
+            </div>
+            <div class="col-md-6">
+                <button type="button" class="btn btn-danger" style="width:100%">Rechazar aplicante</button>
+            </div>
+        </div>
+    </div>
+    <!--PASO 0-->
+
+
+
+    <!--PASO 1-->
+    <div class="my-5" ng-show="application.stage==1">
+        <h1 style="color:forestgreen">Estamos esperando a que el usuario conteste las preguntas de tu oferta. Te notificaremos por correo cuando esté listo.</h1>
+    </div>
+    <!--PASO 1-->
+
+
+
+    <!--PASO 2-->
+    <div ng-show="application.stage==2">
+        <div class="row my-5">
+            <div class="col-md-12 col-xs-12 text-center">
+                <h1>El usuario ha respondido la entrevisa. Puedes ver sus respuestas en el siguiente link. Si deseas aceptar al aplicante, el siguiente paso será una entrevista en tiempo real por videochat.</h1>
+                <a href="api/files/applications/answers/{{application._id}}.pdf">
+                    <h1>Archivo de respuestas</h1>
+                </a>
+            </div>
+        </div>
+        <div class="row my-5">
+            <div class="col-md-6">
+                <button type="button" ng-click="proceedApplication()" class="btn btn-success" style="width:100%">Aceptar aplicante</button>
+            </div>
+            <div class="col-md-6">
+                <button type="button" class="btn btn-danger" style="width:100%">Rechazar aplicante</button>
+            </div>
+        </div>
+    </div>
+    <!--PASO 2-->
+
+
+
+    <!--PASO 3-->
+    <div class="my-5 text-center" ng-show="application.stage==3">
+        <h1>
+            Estás en la etapa final. Revisa tu correo electrónico, te envíamos un link para entrar a una sala de videochat que expirará en 15 días. Es necesario que te comuniques con el aplicante por correo electrónico o télefono para fijar un horario de entrevista. La entrevista se llevará a cabo en el siguiente link: <a href="https://bolsa-trabajo-videochat.herokuapp.com/">https://bolsa-trabajo-videochat.herokuapp.com/</a>
+        </h1>
+    </div>
+    <!--PASO 3-->
+
+
+</div>
