@@ -21,7 +21,7 @@ router.get('/sendMail',async (req,res)=>{
     to: "carlos.eao15@gmail.com, omarsalazarx@gmail.com", // list of receivers
     subject: "Hello ✔", // Subject line
     text: "Hello world?", // plain text body
-    html: "<b>Hello world?</b>" // html body
+    html: `<a href="http://localhost:3000/"></a> `// html body
   });
 
   console.log("Message sent: %s", info.messageId);

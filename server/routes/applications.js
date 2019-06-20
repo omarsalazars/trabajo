@@ -4,8 +4,12 @@ const multer = require('multer');
 
 let Application = require('../models/application');
 let Offer = require('../models/offer');
+let Enterprise = require('../models/enterprise');
+let User = require('../models/user');
 
 const { verifyToken} = require('../middlewares/authentication');
+
+const { sendNewInterestedMail, sendApplicationUpdateMail} = require('../helpers/mailing')
 
 //GET ALL APPLICATIONS
 
@@ -65,6 +69,14 @@ router.post('/',  verifyToken, (req, res)=>{
                     err
                 })
             }
+            Offer.findById(applicationDB.offer)
+            .exec((err, offerDB)=>{
+                Enterprise.findById(offerDB.enterprise)
+                .exec((err, enterpriseDB)=>{
+                    //ENVIAR CORREO A LA EMPRESA
+                    sendNewInterestedMail(enterpriseDB.email, enterpriseDB.name);
+                })
+            })
             res.json({
                 ok:true,
                 application:applicationDB
@@ -233,13 +245,13 @@ router.put('/:id/proceed', (req, res)=>{
                 description="En espera de confirmación por parte de empresa";
                 break;
             case 1:
-                description="Preguntas enviadas";
+                description="Pasaste a la siguiente etapa, ahora tienes que responder unas preguntas";
                 break;
             case 2:
-                description="Ya métanse al videochat";
+                description="Pasaste a la siguiente etapa, ahora tienes que prepararte para una videollamada con la empresa. Comunicate con la empresa para acordar un horario, pueden utilizar la siguiente liga https://bolsa-trabajo-videochat.herokuapp.com/ ";
                 break;
             case 3:
-                description="Ya le dieron el puesto al wey"
+                description="Felicidades, te dieron el trabajo"
                 break;
         }
 
@@ -258,17 +270,28 @@ router.put('/:id/proceed', (req, res)=>{
                         err
                     })
                 }
-                return res.json({
-                    finishedApplication,
-                    description
+                User.findById(applicationDB.user)
+                .exec((err, userDB)=>{
+                    //ENVIAR CORREO A LA EMPRESA
+                    sendApplicationUpdateMail(userDB.email, userDB.first_name+" "+" "+userDB.last_name, description);
+                    return res.json({
+                        finishedApplication,
+                        description
+                    })
                 })
             })
         }
         else{
-            return res.json({
-                applicationDB,
-                description
+            User.findById(applicationDB.user)
+            .exec((err, userDB)=>{
+                //ENVIAR CORREO A LA EMPRESA
+                sendApplicationUpdateMail(userDB.email, userDB.first_name+" "+" "+userDB.last_name, description);
+                return res.json({
+                    applicationDB,
+                    description
+                })
             })
+            
         }
 
         
