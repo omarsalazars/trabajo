@@ -373,13 +373,14 @@ app.controller('enterpriseController',function($localStorage,$scope,$routeParams
 
 app.controller('accountController',function($window,$scope,$localStorage,HttpService){
 
-    $scope.enterprises = []; 
-
     $scope.getUser = function(){
         HttpService.getUserById(
             $localStorage.currentUser.user._id,
             function(result){
+                $scope.enterprises = [];
                 $scope.user = HttpService.user;
+                console.log($scope.user);
+                $scope.getEnterprises();
             }
         );
 
@@ -404,12 +405,12 @@ app.controller('accountController',function($window,$scope,$localStorage,HttpSer
     };
 
     $scope.getEnterprises = function(){
-        angular.forEach($localStorage.currentUser.user.managed_enterprises, function(value, key){
-            HttpService.getEnterpriseById(value,function(result){
+        //angular.forEach($localStorage.currentUser.user.managed_enterprises,
+       $scope.enterprises = []; angular.forEach($scope.user.managed_enterprises,function(value, key){
+            HttpService.getEnterpriseById(value._id,function(result){
                 $scope.enterprises.push(HttpService.enterprise);
             });
         });
-
     };
 
     $scope.updateUserImage = function(){
@@ -484,14 +485,24 @@ app.controller('accountController',function($window,$scope,$localStorage,HttpSer
     $scope.addEnterprise = function(){
         HttpService.addEnterprise(
             $scope.newEnterprise,
+            $localStorage.currentUser.user._id,
+            $localStorage.currentUser.token,
             function(result){
-                $scope.getEnterprises();
+                $scope.getUser();
             }
         );
     }
 
+    $scope.deleteEnterprise = function(enterprise){
+        HttpService.deleteEnterprise(
+            enterprise,
+            function(result){
+                $scope.getUser();
+            }
+        );
+    };
+    
     $scope.getUser();
-    $scope.getEnterprises();
     $scope.getApplications();
 });
 

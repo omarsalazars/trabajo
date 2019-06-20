@@ -64,6 +64,7 @@
                     <th scope="col">Teléfono</th>
                     <th scope="col">Email</th>
                     <th scope="col"></th>
+                    <th scope="col"></th>
                 </tr>
             </thead>
             <tbody>
@@ -80,6 +81,12 @@
                             </button>
                         </a>
                     </td>
+                    <td>
+
+                        <button type="button" ng-click="deleteEnterprise(e)" class="btn btn-danger">
+                            Borrar
+                        </button>
+                    </td>
                 </tr>
                 <tr>
             </tbody>
@@ -87,18 +94,18 @@
     </div>
     <div class="row my-3">
         <div class="col-md-6 col-xs-12">
-            <input type="text" class="form-control" ng-model="newEnterprise.name">
+            <input placeholder="Nombre" type="text" class="form-control" ng-model="newEnterprise.name">
         </div>
         <div class="col-md-6 col-xs-12">
-            <input type="text" class="form-control" ng-model="newEnterprise.email">
+            <input placeholder="Email" type="text" class="form-control" ng-model="newEnterprise.email">
         </div>
     </div>
     <div class="row my-3">
         <div class="col-md-6 col-xs-12">
-            <input type="text" class="form-control" ng-model="newEnterprise.website">
+            <input placeholder="Website" type="text" class="form-control" ng-model="newEnterprise.website">
         </div>
         <div class="col-md-6 col-xs-12">
-            <input type="number" class="form-control" ng-model="newEnterprise.phone">
+            <input placeholder="Telefono" type="number" class="form-control" ng-model="newEnterprise.phone">
         </div>
     </div>
     <div class="row my-3">

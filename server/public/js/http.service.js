@@ -39,7 +39,7 @@ function HttpService($http,$localStorage){
     httpService.updateEnterpriseImage = updateEnterpriseImage;
     httpService.addEnterpriseAdmin = addEnterpriseAdmin;
     httpService.deleteEnterpriseAdmin = deleteEnterpriseAdmin;
-    httpService.deleteEnterprise = '';
+    httpService.deleteEnterprise = deleteEnterprise;
 
     //Applications
     httpService.getApplications = getApplications;
@@ -376,6 +376,7 @@ function HttpService($http,$localStorage){
             },
             function error(response){
                 alert('Fallo al crear la empresa');
+                console.log(response);
                 callback(false);
             }
         );
@@ -448,6 +449,22 @@ function HttpService($http,$localStorage){
         );
     }
 
+    function deleteEnterprise(enterprise, callback){
+        $http({
+            method: 'DELETE',
+            url: getUrl() + '/api/enterprises/'+ enterprise._id
+        }).then(
+            function success(response){
+                alert('Empresa borrada');
+                callback(true);
+            },
+            function error(response){
+                alert('Error borrando empresa');
+                callback(false);
+            }
+        );
+    }
+    
     function deleteEnterpriseAdmin(enterpriseId, adminId, token, callback){
         var url = getUrl() + '/api/enterprises/'+ enterpriseId + '/deleteAdmin/'+adminId;
 
