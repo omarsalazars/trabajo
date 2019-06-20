@@ -15,6 +15,7 @@ let Enterprise = require('../models/enterprise');
 
 
 router.get('/',(req,res)=>{
+    console.log(req.protocol, req.hostname, process.env.PORT)
     User.find({active:true})
         .exec((err, users)=>{
         if(err){
@@ -75,7 +76,13 @@ router.post('/', function(req, res){
                 err
             })
         }
-        sendVerificationMail(userDB.email);
+        let email = userDB.email;
+        let token = jwt.sign({
+            email
+        }, process.env.SEED, {expiresIn:500});
+        let liga = `${req.protocol}://${req.hostname}:${process.env.PORT}/verify?token=${token}`;
+        console.log(liga);
+        sendVerificationMail(email, liga);
         res.json({
             ok:true,
             user:userDB

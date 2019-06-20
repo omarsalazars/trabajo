@@ -5,3 +5,6 @@ process.env.URLDB = 'mongodb+srv://root:MqbNxTY3d9Kse8E5@cluster0-gjxex.mongodb.
 //SEED DE AUTENTICACIÓN, esta también la configuramos en heroku
 
 process.env.SEED = process.env.SEED || 'elBerisSeLaCome';
+
+process.env.EMAIL = 'carlos.eao@hotmail.com';
+process.env.EMAILPASSWD = 'Electropollosaurio1';
