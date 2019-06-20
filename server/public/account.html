@@ -85,6 +85,29 @@
             </tbody>
         </table>
     </div>
+    <div class="row my-3">
+        <div class="col-md-6 col-xs-12">
+            <input type="text" class="form-control" ng-model="newEnterprise.name">
+        </div>
+        <div class="col-md-6 col-xs-12">
+            <input type="text" class="form-control" ng-model="newEnterprise.email">
+        </div>
+    </div>
+    <div class="row my-3">
+        <div class="col-md-6 col-xs-12">
+            <input type="text" class="form-control" ng-model="newEnterprise.website">
+        </div>
+        <div class="col-md-6 col-xs-12">
+            <input type="number" class="form-control" ng-model="newEnterprise.phone">
+        </div>
+    </div>
+    <div class="row my-3">
+        <div class="col-md-12 col-xs-12 text-center">
+            <button type="button" class="btn btn-success" ng-click="addEnterprise()">
+                Añadir empresa
+            </button>
+        </div>
+    </div>
     <div class="row">
         <h3>Ofertas aplicadas:</h3>
         <table class="table">
@@ -120,5 +143,10 @@
                 <tr>
             </tbody>
         </table>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <button type="button" class="btn btn-danger" ng-click="deleteAccount()">ELIMINAR CUENTA</button>
+        </div>
     </div>
 </div>

@@ -49,7 +49,24 @@ app.config(function($routeProvider){
         .when("/application/:id",{
         templateUrl: '../application.html',
         controller: "applicationController"
+    })
+        .when("/signin",{
+        templateUrl: '../signin.html',
+        controller: 'signinController'
     });
+});
+
+app.controller("signinController",function($scope, HttpService, $window){
+    $scope.addUser = function(){
+        HttpService.addUser(
+            $scope.user,
+            function(result){
+                if(result){
+                    $window.location.href="#!login";
+                }
+            }
+        );
+    }
 });
 
 app.controller("applicationController",function($scope, $routeParams, HttpService){
@@ -324,10 +341,19 @@ app.controller('enterpriseController',function($localStorage,$scope,$routeParams
             }
         );
     };
-    
+
     $scope.updateEnterprise = function(){
         $scope.updateEnterpriseInfo();
         $scope.updateEnterpriseImage();
+    }
+
+    $scope.deleteOffer = function(offerId){
+        HttpService.deleteOffer(
+            offerId,
+            function(result){
+                $scope.getOffers();
+            }
+        );
     }
 
     $scope.getEnterprise();
@@ -345,7 +371,7 @@ app.controller('enterpriseController',function($localStorage,$scope,$routeParams
 
 
 
-app.controller('accountController',function($scope,$localStorage,HttpService){
+app.controller('accountController',function($window,$scope,$localStorage,HttpService){
 
     $scope.enterprises = []; 
 
@@ -426,7 +452,7 @@ app.controller('accountController',function($scope,$localStorage,HttpService){
             $localStorage.currentUser.token,
             formData,
             function(result){
-
+                $window.location.href="#!login";
             }
         );
     };
@@ -445,6 +471,24 @@ app.controller('accountController',function($scope,$localStorage,HttpService){
             }
         );
     };
+
+    $scope.deleteAccount = function(){
+        HttpService.deleteUser(
+            $localStorage.currentUser.user._id,
+            function(result){
+
+            }
+        );
+    }
+
+    $scope.addEnterprise = function(){
+        HttpService.addEnterprise(
+            $scope.newEnterprise,
+            function(result){
+                $scope.getEnterprises();
+            }
+        );
+    }
 
     $scope.getUser();
     $scope.getEnterprises();
@@ -495,11 +539,51 @@ app.controller('enterprisesController', function($scope,HttpService){
 
 app.controller('searchController',function($scope,HttpService){
 
+    $scope.max = 50000;
+    $scope.min = 3000;
+    $( function() {
+        $( "#slider-range" ).slider({
+            range: true,
+            min: 3000,
+            max: 50000,
+            values: [ 3000, 50000 ],
+            slide: function( event, ui ) {
+                $( "#amount" ).val( "$" + ui.values[ 0 ] + " - $" + ui.values[ 1 ] );
+
+                $scope.max=ui.values[1];
+                $scope.min=ui.values[0];
+                console.log($scope.min+' '+$scope.max);
+            }
+        });
+        $( "#amount" ).val( "$" + $( "#slider-range" ).slider( "values", 0 ) +
+                           " - $" + $( "#slider-range" ).slider( "values", 1 ) );
+        $( "#min" ).val( $( "#slider-range" ).slider( "values",0));
+    } );
+
+
+
+
+    $scope.priceFilterMore = function(prop,val){
+        return function(item){
+            console.log(prop);
+            console.log(item[prop]);
+            return item[prop] >= val;
+        };
+    };
+
+    $scope.priceFilterLess = function(prop,val){
+        return function(item){
+            return item[prop] <= val;
+        };
+    };
+
     $scope.getOffers = function(){
         HttpService.getOffers(function(result){
             $scope.offers = HttpService.offers;
         });
     };
+
+
 
     $scope.getOffers();
 

@@ -20,7 +20,7 @@ function HttpService($http,$localStorage){
     httpService.addOffer = addOffer;
     httpService.updateOfferInfo = updateOfferInfo;
     httpService.updateOfferFile = updateOfferFile;
-    httpService.deleteOffer = '';
+    httpService.deleteOffer = deleteOffer;
 
     //Users
     httpService.getUsers = getUsers;
@@ -29,7 +29,7 @@ function HttpService($http,$localStorage){
     httpService.updateUserInfo = updateUserInfo;
     httpService.updateUserImage = updateUserImage;
     httpService.updateUserCurriculum = updateUserCurriculum;
-    httpService.deleteUser = '';
+    httpService.deleteUser = deleteUser;
 
     //Enterprises
     httpService.getEnterprises = getEnterprises;
@@ -159,10 +159,41 @@ function HttpService($http,$localStorage){
     function updateOfferFile(id,token,file,callback){
 
     }
+    
+    function deleteOffer(id,callback){
+        $http({
+            method: 'DELETE',
+            url: getUrl() + '/api/offers/'+id
+        }).then(
+            function success(response){
+                console.log(response);
+                callback(true);
+            },
+            function error(response){
+                console.log(response);
+                callback(false);
+            }
+        );
+    }
     //Fin Offers
 
     //Inicio users
 
+    function deleteUser(id,callback){
+        $http({
+            method: 'DELETE',
+            url: getUrl() + '/api/users/'+id
+        }).then(
+            function success(response){
+                alert('Usuario eliminado');
+                callback(true);
+            },
+            function error(response){
+                callback(false);
+            }
+        );
+    }
+    
     function getUsers(callback){
         $http({
             method: 'GET',
@@ -200,7 +231,7 @@ function HttpService($http,$localStorage){
     function addUser(user,callback){
         $http({
             method: 'POST',
-            url: getUrl + '/api/users',
+            url: getUrl() + '/api/users',
             data: {
                 first_name : user.first_name,
                 last_name : user.last_name,
@@ -215,7 +246,8 @@ function HttpService($http,$localStorage){
                 callback(true);
             },
             function error(response){
-                alert('Error creando usuario');
+                alert('Error creando usuario'+ response.data.err._message);
+                console.log(response.data);
                 callback(false);
             }
         );
