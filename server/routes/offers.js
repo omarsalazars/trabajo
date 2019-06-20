@@ -126,7 +126,7 @@ router.put('/:id', function(req, res){
 });
 
 router.delete('/:id', (req, res)=>{
-    Offer.findByIdAndDelete(id)
+    Offer.findByIdAndDelete(req.params.id)
     .exec((err, offerDB)=>{
         if(err){
             return json.status(500).json({

@@ -32,7 +32,7 @@
         <div class="row">
             <div class="col-md-6 col-xs-12">
                 <label>Foto de perfil</label>
-                <img id="profile" class="img-fluid img-thumbnail rounded" src="../uploads/users/images/{{user._id}}.jpg">
+                <img id="profile" class="img-fluid img-thumbnail rounded" src="api/files/users/images/{{user._id}}.jpg">
             </div>
             <div class="col-md-6 col-xs-12">
                 <label>Archivos</label>
@@ -85,34 +85,68 @@
             </tbody>
         </table>
     </div>
+    <div class="row my-3">
+        <div class="col-md-6 col-xs-12">
+            <input type="text" class="form-control" ng-model="newEnterprise.name">
+        </div>
+        <div class="col-md-6 col-xs-12">
+            <input type="text" class="form-control" ng-model="newEnterprise.email">
+        </div>
+    </div>
+    <div class="row my-3">
+        <div class="col-md-6 col-xs-12">
+            <input type="text" class="form-control" ng-model="newEnterprise.website">
+        </div>
+        <div class="col-md-6 col-xs-12">
+            <input type="number" class="form-control" ng-model="newEnterprise.phone">
+        </div>
+    </div>
+    <div class="row my-3">
+        <div class="col-md-12 col-xs-12 text-center">
+            <button type="button" class="btn btn-success" ng-click="addEnterprise()">
+                Añadir empresa
+            </button>
+        </div>
+    </div>
     <div class="row">
         <h3>Ofertas aplicadas:</h3>
         <table class="table">
             <thead class="thead-dark">
                 <tr>
                     <th scope="col">#</th>
-                    <th scope="col">Nombre</th>
-                    <th scope="col">Sitio web</th>
-                    <th scope="col">Teléfono</th>
-                    <th scope="col">Email</th>
+                    <th scope="col">Puesto</th>
+                    <th scope="col">Empresa</th>
+                    <th scope="col">Status</th>
+                    <th scope="col"></th>
                     <th scope="col"></th>
                 </tr>
             </thead>
             <tbody>
-                <tr ng-repeat="o in offers">
-                    <th scope="row">{{e._id}}</th>
-                    <td>{{e.name}}</td>
-                    <td>{{e.website}}</td>
-                    <td>{{e.phone}}</td>
-                    <td>{{e.email}}</td>
+                <tr ng-repeat="a in applications">
+                    <th scope="row">{{a._id}}</th>
+                    <td>{{a.offer.position}}</td>
+                    <td>{{a.offer.enterprise.name}}</td>
+                    <td>{{a.stage}}</td>
                     <td>
-                        <button type="button" class="btn btn-info">
-                            Administrar
+                        <a href="#!aplicacion/{{a._id}}">
+                            <button type="button" class="btn btn-info">
+                                Administrar
+                            </button>
+                        </a>
+                    </td>
+                    <td>
+                        <button type="button" ng-click="deleteApplication(a)" class="btn btn-danger">
+                            Eliminar
                         </button>
                     </td>
                 </tr>
                 <tr>
             </tbody>
         </table>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <button type="button" class="btn btn-danger" ng-click="deleteAccount()">ELIMINAR CUENTA</button>
+        </div>
     </div>
 </div>
