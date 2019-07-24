@@ -3,6 +3,9 @@ const router = express.Router();
 const multer = require('multer');
 
 let Offer = require('../models/offer');
+let User =require('../models/user');
+
+const { sendVerificationMail, sendNotifyNewOfferMail} = require('../helpers/mailing')
 
 router.get('/',(req,res)=>{
     Offer.find({})
@@ -62,9 +65,21 @@ router.post('/', function(req, res){
                 err
             })
         }
-        res.json({
-            ok:true,
-            offer:offerDB
+        User.find()
+        .exec(async (err, usersDB)=>{
+            for(var i =0; i<usersDB.length; i++){
+                try {
+                    console.log('enviandoCorreo');
+                    await sendNotifyNewOfferMail(usersDB[i].email, 
+                        `${usersDB[i].first_name} ${usersDB[i].last_name} hay una nueva oferta disponible en nuestra bolsa de trabajo`);    
+                } catch (error) {
+                    
+                }
+            }
+            res.json({
+                ok:true,
+                offer:offerDB
+            })
         })
 
     });

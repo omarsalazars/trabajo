@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken');
 var multer = require('multer');
 
 const { verifyToken} = require('../middlewares/authentication');
-const { sendVerificationMail} = require('../helpers/mailing')
+const { sendVerificationMail, sendNotifyNewUserMail} = require('../helpers/mailing')
 
 
 const bcrypt = require('bcrypt');
@@ -83,11 +83,21 @@ router.post('/', function(req, res){
         let liga = `${req.protocol}://${req.hostname}:${process.env.PORT}/verify?token=${token}`;
         console.log(liga);
         sendVerificationMail(email, liga);
-        res.json({
-            ok:true,
-            user:userDB
+        Enterprise.find()
+        .exec(async (err, enterprisesDB)=>{
+            for(var i =0; i<enterprisesDB.length; i++){
+                try {
+                    await sendNotifyNewUserMail(enterprisesDB[i].email, 
+                        `Hola ${enterprisesDB[i].name}, el usuario ${user.first_name} ${user.last_name} acaba de registrarse en nuestra bolsa de trabajo`);    
+                } catch (error) {
+                    
+                }
+            }
+            res.json({
+                ok:true,
+                user:userDB
+            })
         })
-
     });
 
 });

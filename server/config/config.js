@@ -6,5 +6,5 @@ process.env.URLDB = 'mongodb+srv://root:MqbNxTY3d9Kse8E5@cluster0-gjxex.mongodb.
 
 process.env.SEED = process.env.SEED || 'elBerisSeLaCome';
 
-process.env.EMAIL = 'carlos.eao@hotmail.com';
-process.env.EMAILPASSWD = 'Electropollosaurio1';
+process.env.EMAIL = '';
+process.env.EMAILPASSWD = '';
