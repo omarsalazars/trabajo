@@ -30,6 +30,6 @@
     "multer": "^1.4.1",
     "nodemailer": "^6.2.1",
     "sass": "^1.21.0",
-    "underscore": "^1.9.1"
+    "underscore": "^1.12.1"
   }
 }
